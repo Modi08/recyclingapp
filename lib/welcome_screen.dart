@@ -10,28 +10,23 @@ class WelcomeScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Image or illustration section occupying a bit less than 75% of the screen
             Expanded(
-              flex: 3, // Reduced this slightly so it takes less than 75%
+              flex: 3,
               child: Container(
-                width: double.infinity, // Ensures the image fills the width
+                width: double.infinity,
                 child: Image.asset(
-                  'assets/recycle.png', // Make sure the path is correct
-                  fit: BoxFit.cover, // Ensures the image fills the container
+                  'assets/recycle.png',
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-            // Text and buttons section occupying the remaining space
             Expanded(
-              flex:
-                  2, // Increased this flex to 2, so it occupies a bit more space
+              flex: 2,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0), // Added padding
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    // Text section
                     Column(
                       children: [
                         Text(
@@ -56,18 +51,17 @@ class WelcomeScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    // Buttons section
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0), // Adjusted padding for buttons
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Column(
                         children: [
                           ElevatedButton(
                             onPressed: () {
-                              // Add navigation to sign-up page
+                              Navigator.pushNamed(context,
+                                  '/signup'); // Navigate to SignUpScreen
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green, // Background color
+                              backgroundColor: Colors.green,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
@@ -81,11 +75,11 @@ class WelcomeScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(
-                              height: 10), // Reduced spacing between buttons
+                          const SizedBox(height: 10),
                           OutlinedButton(
                             onPressed: () {
-                              // Add navigation to log-in page
+                              Navigator.pushNamed(
+                                  context, '/login'); // Navigate to LoginScreen
                             },
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(
