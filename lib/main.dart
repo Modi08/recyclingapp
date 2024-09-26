@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'leaderboard.dart';
 import 'package:recyclingapp/welcome_screen.dart'; // Replace your_app_name with the actual app name
+import 'signup_screen.dart'; // Import SignUpScreen
+import 'login_screen.dart'; // Import LoginScreen
 
 void main() {
   runApp(const RecyclingApp());
@@ -14,7 +16,12 @@ class RecyclingApp extends StatelessWidget {
     return MaterialApp(
       title: 'Recycling App',
       theme: ThemeData(primarySwatch: Colors.green),
-      home: const WelcomeScreen(), // Display the WelcomeScreen first
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const WelcomeScreen(),
+        '/signup': (context) => const SignUpScreen(),
+        '/login': (context) => const LoginScreen(),
+      },
     );
   }
 }
