@@ -32,7 +32,7 @@ class WelcomeScreen extends StatelessWidget {
                         Text(
                           'Recycle',
                           style: TextStyle(
-                            fontSize: 28,
+                            fontSize: 50,
                             fontWeight: FontWeight.bold,
                             color: Colors.green.shade800,
                           ),
@@ -70,7 +70,7 @@ class WelcomeScreen extends StatelessWidget {
                             child: const Text(
                               'Sign Up',
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 22,
                                 color: Colors.white,
                               ),
                             ),
@@ -83,7 +83,7 @@ class WelcomeScreen extends StatelessWidget {
                             },
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(
-                                  color: Colors.green, width: 2),
+                                  color: Colors.green, width: 3),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
@@ -92,7 +92,7 @@ class WelcomeScreen extends StatelessWidget {
                             child: const Text(
                               'Log In',
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 22,
                                 color: Colors.green,
                               ),
                             ),
