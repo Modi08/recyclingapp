@@ -15,23 +15,25 @@ class Leaderboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Text(
-            'LEADERBOARD',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.purple,
+    return OverflowBox(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text(
+              'LEADERBOARD',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.purple,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          _buildTopThree(),
-          const SizedBox(height: 20),
-          _buildRestOfLeaderboard(),
-        ],
+            const SizedBox(height: 20),
+            _buildTopThree(),
+            const SizedBox(height: 20),
+            _buildRestOfLeaderboard(),
+          ],
+        ),
       ),
     );
   }
