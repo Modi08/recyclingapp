@@ -8,7 +8,6 @@ import 'package:recyclingapp/profile_screen.dart';
 import 'package:recyclingapp/services/general/colors.dart';
 import 'package:recyclingapp/services/general/snackBar.dart';
 import 'package:recyclingapp/signup_screen.dart';
-import 'package:recyclingapp/welcome_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -44,9 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: const Text("Login"),
-          backgroundColor: appBarColor),
+      appBar: AppBar(title: const Text("Login"), backgroundColor: appBarColor),
       backgroundColor: backgroundColor,
       body: SingleChildScrollView(
         child: SafeArea(
