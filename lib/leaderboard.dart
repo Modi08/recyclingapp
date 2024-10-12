@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class Leaderboard extends StatelessWidget {
+  const Leaderboard({super.key});
+
   // Dummy data for now
-  final List<Map<String, dynamic>> players = [
+  final List<Map<String, dynamic>> players = const [
     {"name": "Player 1", "score": 5700},
     {"name": "Player 2", "score": 4500},
     {"name": "Player 3", "score": 3200},
@@ -20,7 +22,7 @@ class Leaderboard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Text(
+            const Text(
               'LEADERBOARD',
               style: TextStyle(
                 fontSize: 24,
@@ -56,7 +58,7 @@ class Leaderboard extends StatelessWidget {
     return Column(
       children: [
         Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.amberAccent,
           ),

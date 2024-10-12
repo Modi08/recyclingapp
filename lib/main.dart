@@ -5,11 +5,11 @@ import 'signup_screen.dart'; // Import SignUpScreen
 import 'login_screen.dart'; // Import LoginScreen
 
 void main() {
-  runApp(const RecyclingApp());
+  runApp(const RecyclingApp()); // Add const here
 }
 
 class RecyclingApp extends StatelessWidget {
-  const RecyclingApp({super.key});
+  const RecyclingApp({super.key}); // Add const here
 
   @override
   Widget build(BuildContext context) {
@@ -18,24 +18,24 @@ class RecyclingApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.green),
       initialRoute: '/',
       routes: {
-        '/': (context) => const WelcomeScreen(),
-        '/signup': (context) => const SignUpScreen(),
-        '/login': (context) => const LoginScreen(),
+        '/': (context) => const WelcomeScreen(), // Add const here
+        '/signup': (context) => const SignUpScreen(), // Add const here
+        '/login': (context) => const LoginScreen(), // Add const here
       },
     );
   }
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key}); // Add const here
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recycling Leaderboard'),
+        title: const Text('Recycling Leaderboard'), // Add const here
       ),
-      body: SingleChildScrollView(
+      body: const SingleChildScrollView(
         child: Leaderboard(),
       ),
     );
