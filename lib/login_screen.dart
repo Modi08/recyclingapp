@@ -7,6 +7,7 @@ import 'package:recyclingapp/profile_screen.dart';
 import 'package:recyclingapp/services/general/colors.dart';
 import 'package:recyclingapp/services/general/snackBar.dart';
 import 'package:recyclingapp/signup_screen.dart';
+import 'package:recyclingapp/main_navigation.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,7 +20,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final pwdController = TextEditingController();
 
-  // Method to handle login logic
   Future<void> login() async {
     String apiUrl = "https://qeh35ldygc.execute-api.eu-central-1.amazonaws.com";
     var paramsApiUrl =
@@ -35,11 +35,11 @@ class _LoginScreenState extends State<LoginScreen> {
         // Show the appropriate message based on the status code
         showSnackbar(context, responseData['msg'], response.statusCode == 400);
 
-        // If successful, navigate to the ProfileScreen
+        // If successful, navigate to the MainNavigation (which has BottomNavigationBar)
         if (response.statusCode == 200) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            MaterialPageRoute(builder: (context) => MainNavigation()),
           );
         }
       }
