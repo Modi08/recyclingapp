@@ -4,64 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:recyclingapp/components/button.dart';
 import 'package:recyclingapp/components/mytextfield.dart';
+import 'package:recyclingapp/services/general/colors.dart';
 import 'package:recyclingapp/services/general/snackbar.dart';
 import 'package:recyclingapp/welcome_screen.dart';
-/*
-class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign Up'),
-        backgroundColor: Colors.green,
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Sign Up Page',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              const TextField(
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const TextField(
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  // Add your sign-up logic here
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                ),
-                child: const Text('Sign Up'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-*/
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -109,9 +54,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Scaffold(
       appBar: AppBar(
         title: const Text('Sign Up'),
-        backgroundColor: Colors.green,
+        backgroundColor: appBarColor,
       ),
-      backgroundColor: Colors.grey[300],
+      backgroundColor: backgroundColor,
       body: SafeArea(
           child: SingleChildScrollView(
         child: Center(
@@ -121,9 +66,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               const SizedBox(height: 50),
               Icon(
-                Icons.message,
+                Icons.recycling_sharp,
                 size: 80,
-                color: Colors.grey[800],
+                color: logoColor,
               ),
               const SizedBox(height: 50),
               const Text(
