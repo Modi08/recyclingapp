@@ -13,7 +13,7 @@ class WelcomeScreen extends StatelessWidget {
             children: [
               Expanded(
                 flex: 3,
-                child: Container(
+                child: SizedBox(
                   width: double.infinity,
                   child: Image.asset(
                     'assets/recycle.png',
@@ -79,8 +79,8 @@ class WelcomeScreen extends StatelessWidget {
                             const SizedBox(height: 10),
                             OutlinedButton(
                               onPressed: () {
-                                Navigator.pushNamed(
-                                    context, '/login'); // Navigate to LoginScreen
+                                Navigator.pushNamed(context,
+                                    '/login'); // Navigate to LoginScreen
                               },
                               style: OutlinedButton.styleFrom(
                                 side: const BorderSide(
