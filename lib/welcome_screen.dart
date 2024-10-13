@@ -12,7 +12,7 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                flex: 3,
+                flex: 4,
                 child: SizedBox(
                   width: double.infinity,
                   child: Image.asset(
@@ -24,34 +24,34 @@ class WelcomeScreen extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Column(
                         children: [
                           Text(
-                            'Recycle',
+                            'Ecofy',
                             style: TextStyle(
-                              fontSize: 50,
+                              fontSize: 80,
                               fontWeight: FontWeight.bold,
                               color: Colors.green.shade800,
                             ),
                           ),
-                          const SizedBox(height: 10),
                           const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 30.0),
                             child: Text(
-                              'Help make our planet greener by recycling and competing with others!',
+                              'Recycling Made Simple',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 20,
                                 color: Colors.grey,
                               ),
                             ),
                           ),
                         ],
                       ),
+                      const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: Column(
