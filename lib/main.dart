@@ -5,11 +5,11 @@ import 'signup_screen.dart'; // Import SignUpScreen
 import 'login_screen.dart'; // Import LoginScreen
 
 void main() {
-  runApp(const RecyclingApp()); // Add const here
+  runApp(const Ecofy()); // Add const here
 }
 
-class RecyclingApp extends StatelessWidget {
-  const RecyclingApp({super.key}); // Add const here
+class Ecofy extends StatelessWidget {
+  const Ecofy({super.key}); // Add const here
 
   @override
   Widget build(BuildContext context) {

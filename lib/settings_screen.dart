@@ -10,8 +10,8 @@ class SettingsScreen extends StatelessWidget {
         title: const Text('Settings'),
         backgroundColor: Colors.green,
       ),
-      body: Center(
-        child: const Text('Settings Page'),
+      body: const Center(
+        child: Text('Settings Page'),
       ),
     );
   }
