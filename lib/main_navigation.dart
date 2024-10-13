@@ -4,6 +4,8 @@ import 'leaderboard.dart';
 import 'settings_screen.dart'; // You will need to create this screen
 
 class MainNavigation extends StatefulWidget {
+  const MainNavigation({super.key});
+
   @override
   _MainNavigationState createState() => _MainNavigationState();
 }

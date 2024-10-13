@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recyclingapp/services/general/colors.dart';
+import 'package:ecofy/services/general/colors.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -20,8 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       length: 3,
       child: Scaffold(
         backgroundColor: backgroundColor,
-        body: SafeArea(child: SingleChildScrollView(child: Head())
-            ),
+        body: SafeArea(child: SingleChildScrollView(child: Head())),
       ),
     );
   }

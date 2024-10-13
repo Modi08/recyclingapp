@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:recyclingapp/components/button.dart';
-import 'package:recyclingapp/components/mytextfield.dart';
-import 'package:recyclingapp/profile_screen.dart';
-import 'package:recyclingapp/services/general/colors.dart';
-import 'package:recyclingapp/services/general/snackBar.dart';
-import 'package:recyclingapp/signup_screen.dart';
-import 'package:recyclingapp/main_navigation.dart';
+import 'package:ecofy/components/button.dart';
+import 'package:ecofy/components/mytextfield.dart';
+import 'package:ecofy/profile_screen.dart';
+import 'package:ecofy/services/general/colors.dart';
+import 'package:ecofy/services/general/snackBar.dart';
+import 'package:ecofy/signup_screen.dart';
+import 'package:ecofy/main_navigation.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
