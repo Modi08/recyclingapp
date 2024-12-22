@@ -6,7 +6,7 @@ import 'package:ecofy/components/mytextfield.dart';
 import 'package:ecofy/services/general/colors.dart';
 import 'package:ecofy/services/general/snackBar.dart';
 import 'package:ecofy/pages/signup_screen.dart';
-import 'package:ecofy/services/general/main_navigation.dart';
+import 'package:ecofy/services/general/main_navigation.dart'; // Import MainNavigation
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,23 +27,34 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       var response = await http.put(Uri.parse(paramsApiUrl));
 
-      // Check if the widget is still mounted before using context
       if (mounted) {
         var responseData = jsonDecode(response.body);
 
-        // Show the appropriate message based on the status code
+        // Show message based on response
         showSnackbar(context, responseData['msg'], response.statusCode == 400);
 
-        // If successful, navigate to the MainNavigation (which has BottomNavigationBar)
+        // If successful, navigate to MainNavigation
         if (response.statusCode == 200) {
+          var userData = responseData['user'] ?? {};
+
+          // Ensure necessary fields have default values
+          userData = {
+            'username': userData['username'] ?? 'Default User',
+            'bio': userData['bio'] ?? 'This is my bio!',
+            'followers': userData['followers'] ?? 0,
+            'following': userData['following'] ?? 0,
+            'uploadedPhotos': userData['uploadedPhotos'] ?? [],
+          };
+
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const MainNavigation()),
+            MaterialPageRoute(
+              builder: (context) => MainNavigation(userData: userData),
+            ),
           );
         }
       }
     } catch (error) {
-      // Handle errors (such as network issues)
       if (mounted) {
         showSnackbar(context, "An error occurred. Please try again.", true);
       }

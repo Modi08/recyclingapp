@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class OwnProfileScreen extends StatefulWidget {
+  final Map<String, dynamic> userData;
+
+  const OwnProfileScreen(
+      {super.key, required this.userData}); // Update constructor
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<OwnProfileScreen> createState() => _OwnProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  List<String> uploadedPhotos =
-      List.generate(9, (index) => "Placeholder $index"); // Example photo list
-  int followers = 0; // Initial followers count
-  int following = 0; // Initial following count
+class _OwnProfileScreenState extends State<OwnProfileScreen> {
+  late List<String> uploadedPhotos;
+  late int followers;
+  late int following;
+
+  @override
+  void initState() {
+    super.initState();
+    uploadedPhotos = widget.userData['uploadedPhotos']?.cast<String>() ?? [];
+    followers = widget.userData['followers'] ?? 0;
+    following = widget.userData['following'] ?? 0;
+  }
+
   bool isFollowing = false;
 
   void followUser() {
@@ -22,12 +33,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         followers--;
       }
       isFollowing = !isFollowing;
-    });
-  }
-
-  void followAnotherUser() {
-    setState(() {
-      following++;
     });
   }
 
@@ -67,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 80,
               height: 80,
               color: Colors.grey.shade300,
-              child: Icon(Icons.person, size: 40, color: Colors.grey),
+              child: const Icon(Icons.person, size: 40, color: Colors.grey),
             ),
           ),
           const SizedBox(width: 20),
@@ -113,17 +118,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "username",
-            style: TextStyle(
+          Text(
+            widget.userData['name'] ?? "Unknown User",
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 5),
-          const Text(
-            "This is your bio!",
-            style: TextStyle(
+          Text(
+            widget.userData['bio'] ?? "No bio available",
+            style: const TextStyle(
               fontSize: 14,
               color: Colors.grey,
             ),
@@ -131,18 +136,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
     );
-  }
-
-  int points = 0; // Points given to the user
-  bool hasGivenPoints = false; // Tracks if points have been given
-
-  void givePoints() {
-    if (!hasGivenPoints) {
-      setState(() {
-        points++;
-        hasGivenPoints = true;
-      });
-    }
   }
 
   Widget _buildButtons() {
@@ -162,25 +155,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 isFollowing ? "Following" : "Follow",
                 style: TextStyle(
                   color: isFollowing ? Colors.black : Colors.white,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: ElevatedButton(
-              onPressed: hasGivenPoints
-                  ? null
-                  : givePoints, // Disable button if points are given
-              style: ElevatedButton.styleFrom(
-                backgroundColor: hasGivenPoints
-                    ? Colors.grey.shade300 // Disabled color
-                    : const Color(0xFF37BE81), // Active color
-              ),
-              child: Text(
-                hasGivenPoints ? "Points Given" : "Give 5 Points",
-                style: TextStyle(
-                  color: hasGivenPoints ? Colors.black : Colors.white,
                 ),
               ),
             ),
@@ -218,8 +192,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: TabBarView(
         children: [
           _buildGridView(),
-          Center(child: Text("Videos")),
-          Center(child: Text("Tagged")),
+          const Center(child: Text("Videos")),
+          const Center(child: Text("Tagged")),
         ],
       ),
     );
@@ -227,21 +201,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildGridView() {
     return AspectRatio(
-      aspectRatio: 1, // Ensures the grid fits perfectly in a square container
+      aspectRatio: 1,
       child: GridView.builder(
         padding: const EdgeInsets.all(2.0),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3, // Three columns
-          crossAxisSpacing: 2, // Equal horizontal spacing
-          mainAxisSpacing: 2, // Equal vertical spacing
-          childAspectRatio: 1.0, // Ensures all grid items are square
+          crossAxisCount: 3,
+          crossAxisSpacing: 2,
+          mainAxisSpacing: 2,
+          childAspectRatio: 1.0,
         ),
         itemCount: uploadedPhotos.length,
-        physics:
-            const NeverScrollableScrollPhysics(), // Prevents internal scrolling
+        physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return Container(
-            color: const Color(0xFF37BE81), // Your placeholder color
+            color: const Color(0xFF37BE81),
           );
         },
       ),
