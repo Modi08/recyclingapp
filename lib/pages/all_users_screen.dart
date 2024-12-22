@@ -1,6 +1,9 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:ecofy/services/general/socket.dart'; // Import your socket helper
 
 class AllUsersScreen extends StatefulWidget {
   const AllUsersScreen({super.key});
@@ -10,60 +13,123 @@ class AllUsersScreen extends StatefulWidget {
 }
 
 class _AllUsersScreenState extends State<AllUsersScreen> {
-  List<dynamic> users = []; // User data from API
+  List<Map<String, dynamic>> allUsers = [];
+  List<Map<String, dynamic>> filteredUsers = [];
   bool isLoading = true;
+  late WebSocketChannel socket;
 
   @override
   void initState() {
     super.initState();
-    fetchUsers();
+    _connectToWebSocket();
   }
 
-  Future<void> fetchUsers() async {
-    String apiUrl =
-        "https://your-api-endpoint.com/users"; // Update with your API endpoint
+  void _connectToWebSocket() {
+    print("Connecting to WebSocket...");
+    String socketUrl =
+        "wss://ylcg91rcr9.execute-api.eu-central-1.amazonaws.com/prod"; // Replace with your WebSocket URL
+    socket = connectToWebsocket(socketUrl);
 
-    try {
-      var response = await http.get(Uri.parse(apiUrl));
-      if (response.statusCode == 200) {
+    // Send an initial message to request users if required by the server
+    socket.sink
+        .add(jsonEncode({"action": "getUsers"})); // Replace with actual action
+
+    // Listen for messages
+    listendMsg(socket, _refreshUsers);
+
+    // Timeout handling
+    Future.delayed(const Duration(seconds: 10), () {
+      if (isLoading) {
+        print("Timeout: No response from WebSocket server");
         setState(() {
-          users = jsonDecode(response.body);
           isLoading = false;
         });
-      } else {
-        setState(() {
-          isLoading = false;
-        });
-        // Handle error response
       }
-    } catch (error) {
-      setState(() {
-        isLoading = false;
-      });
-      // Handle error
-    }
+    });
+  }
+
+  void _refreshUsers(List<Map<String, dynamic>> users) {
+    setState(() {
+      allUsers = users;
+      filteredUsers = List.from(allUsers);
+      isLoading = false;
+    });
+  }
+
+  void _filterUsers(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredUsers = List.from(allUsers);
+      } else {
+        filteredUsers = allUsers
+            .where((user) =>
+                user["username"]?.toLowerCase().contains(query.toLowerCase()) ??
+                false)
+            .toList();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // Close the WebSocket connection when the widget is disposed
+    socket.sink.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("All Users"),
-        backgroundColor: Colors.green,
+        backgroundColor: const Color(0xFF37BE81),
+        title: const Text("All Users", style: TextStyle(color: Colors.white)),
+        centerTitle: true,
+        automaticallyImplyLeading: false, // Remove the back button
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(users[index]['name'] ?? "Unknown"),
-                  subtitle: Text(users[index]['email'] ?? "No email"),
-                  onTap: () {
-                    // Navigate to user's profile
-                  },
-                );
-              },
+          : Column(
+              children: [
+                // Search Bar
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    onChanged: _filterUsers,
+                    decoration: const InputDecoration(
+                      hintText: "Search users...",
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // User List
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: filteredUsers.length,
+                    itemBuilder: (context, index) {
+                      final user = filteredUsers[index];
+                      return ListTile(
+                        leading: const ClipOval(
+                          child: Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        title: Text(user["username"] ?? "Unknown User"),
+                        onTap: () {
+                          debugPrint("Tapped on ${user['username']}");
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
     );
   }
