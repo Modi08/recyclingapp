@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../pages/profile_screen.dart';
 import '../../pages/leaderboard.dart';
-import '../../pages/settings_screen.dart'; // You will need to create this screen
+import '../../pages/all_users_screen.dart'; // New screen
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -18,7 +18,7 @@ class _MainNavigationState extends State<MainNavigation> {
   static const List<Widget> _pages = <Widget>[
     ProfileScreen(),
     Leaderboard(),
-    SettingsScreen(), // You will create this screen
+    AllUsersScreen(), // New "All Users" screen
   ];
 
   // Function to handle the index change when a button is pressed
@@ -46,8 +46,8 @@ class _MainNavigationState extends State<MainNavigation> {
             label: 'Leaderboard',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: Icon(Icons.group),
+            label: 'All Users',
           ),
         ],
         currentIndex: _selectedIndex, // Highlight the current tab

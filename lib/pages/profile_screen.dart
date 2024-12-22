@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ecofy/services/general/colors.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -9,222 +8,242 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  int postLenght = 0;
-  bool yourse = false;
-  List following = [];
-  bool follow = false;
+  List<String> uploadedPhotos =
+      List.generate(9, (index) => "Placeholder $index"); // Example photo list
+  int followers = 0; // Initial followers count
+  int following = 0; // Initial following count
+  bool isFollowing = false;
+
+  void followUser() {
+    setState(() {
+      if (!isFollowing) {
+        followers++;
+      } else {
+        followers--;
+      }
+      isFollowing = !isFollowing;
+    });
+  }
+
+  void followAnotherUser() {
+    setState(() {
+      following++;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: backgroundColor,
-        body: SafeArea(child: SingleChildScrollView(child: head())),
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(),
+                _buildUserInfo(),
+                _buildButtons(),
+                const Divider(),
+                _buildTabBar(),
+                _buildTabView(),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  Widget head() {
-    return Container(
-      color: backgroundColor,
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          ClipOval(
+            child: Container(
+              width: 80,
+              height: 80,
+              color: Colors.grey.shade300,
+              child: Icon(Icons.person, size: 40, color: Colors.grey),
+            ),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildCountColumn("Posts", uploadedPhotos.length.toString()),
+                _buildCountColumn("Followers", followers.toString()),
+                _buildCountColumn("Following", following.toString()),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCountColumn(String label, String count) {
+    return Column(
+      children: [
+        Text(
+          count,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.grey,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUserInfo() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 13, vertical: 10),
-                child: ClipOval(
-                  child: SizedBox(
-                    width: 80,
-                    height: 80,
-                    child: Icon(Icons.circle),
-                  ),
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const SizedBox(width: 35),
-                      Text(
-                        postLenght.toString(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(width: 53),
-                      const Text(
-                        "followers",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(width: 70),
-                      const Text(
-                        "following",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Row(
-                    children: [
-                      SizedBox(width: 30),
-                      Text(
-                        'Posts',
-                        style: TextStyle(
-                          fontSize: 13,
-                        ),
-                      ),
-                      SizedBox(width: 25),
-                      Text(
-                        'Followers',
-                        style: TextStyle(
-                          fontSize: 13,
-                        ),
-                      ),
-                      SizedBox(width: 19),
-                      Text(
-                        'Following',
-                        style: TextStyle(
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            ],
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "username",
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  "bio",
-                  style: TextStyle(
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Visibility(
-            visible: !follow,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 13),
-              child: GestureDetector(
-                onTap: () {
-                  if (yourse == false) {
-                    //Firebase_Firestor().flollow(uid: widget.Uid);
-                    setState(() {
-                      follow = true;
-                    });
-                  }
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 30,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: yourse ? textColor : Colors.blue,
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(
-                        color: yourse ? Colors.grey.shade400 : Colors.blue),
-                  ),
-                  child: yourse
-                      ? const Text('Edit Your Profile')
-                      : Text(
-                          'Follow',
-                          style: TextStyle(color: textColor),
-                        ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: follow,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 13),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        //Firebase_Firestor().flollow(uid: widget.Uid);
-                        setState(() {
-                          follow = false;
-                        });
-                      },
-                      child: Container(
-                          alignment: Alignment.center,
-                          height: 30,
-                          width: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: Colors.grey.shade200),
-                          ),
-                          child: const Text('Unfollow')),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 30,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: const Text(
-                        'Message',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          const Text(
+            "username",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 5),
-          const SizedBox(
-            width: double.infinity,
-            height: 30,
-            child: TabBar(
-              unselectedLabelColor: Colors.grey,
-              labelColor: Colors.black,
-              indicatorColor: Colors.black,
-              tabs: [
-                Icon(Icons.grid_on),
-                Icon(Icons.video_collection),
-                Icon(Icons.person),
-              ],
+          const Text(
+            "This is your bio!",
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
             ),
           ),
-          const SizedBox(
-            height: 5,
-          )
         ],
+      ),
+    );
+  }
+
+  int points = 0; // Points given to the user
+  bool hasGivenPoints = false; // Tracks if points have been given
+
+  void givePoints() {
+    if (!hasGivenPoints) {
+      setState(() {
+        points++;
+        hasGivenPoints = true;
+      });
+    }
+  }
+
+  Widget _buildButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: ElevatedButton(
+              onPressed: followUser,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isFollowing
+                    ? Colors.grey.shade300
+                    : const Color(0xFF37BE81),
+              ),
+              child: Text(
+                isFollowing ? "Following" : "Follow",
+                style: TextStyle(
+                  color: isFollowing ? Colors.black : Colors.white,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: ElevatedButton(
+              onPressed: hasGivenPoints
+                  ? null
+                  : givePoints, // Disable button if points are given
+              style: ElevatedButton.styleFrom(
+                backgroundColor: hasGivenPoints
+                    ? Colors.grey.shade300 // Disabled color
+                    : const Color(0xFF37BE81), // Active color
+              ),
+              child: Text(
+                hasGivenPoints ? "Points Given" : "Give 5 Points",
+                style: TextStyle(
+                  color: hasGivenPoints ? Colors.black : Colors.white,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey.shade300,
+              shape: const CircleBorder(),
+            ),
+            child: const Icon(Icons.keyboard_arrow_down, color: Colors.black),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return const TabBar(
+      unselectedLabelColor: Colors.grey,
+      labelColor: Colors.black,
+      indicatorColor: Colors.black,
+      tabs: [
+        Icon(Icons.grid_on),
+        Icon(Icons.video_collection),
+        Icon(Icons.person),
+      ],
+    );
+  }
+
+  Widget _buildTabView() {
+    return SizedBox(
+      height: 400,
+      child: TabBarView(
+        children: [
+          _buildGridView(),
+          Center(child: Text("Videos")),
+          Center(child: Text("Tagged")),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGridView() {
+    return AspectRatio(
+      aspectRatio: 1, // Ensures the grid fits perfectly in a square container
+      child: GridView.builder(
+        padding: const EdgeInsets.all(2.0),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3, // Three columns
+          crossAxisSpacing: 2, // Equal horizontal spacing
+          mainAxisSpacing: 2, // Equal vertical spacing
+          childAspectRatio: 1.0, // Ensures all grid items are square
+        ),
+        itemCount: uploadedPhotos.length,
+        physics:
+            const NeverScrollableScrollPhysics(), // Prevents internal scrolling
+        itemBuilder: (context, index) {
+          return Container(
+            color: const Color(0xFF37BE81), // Your placeholder color
+          );
+        },
       ),
     );
   }
