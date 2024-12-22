@@ -1,36 +1,68 @@
 import 'package:flutter/material.dart';
 
 class OwnProfileScreen extends StatefulWidget {
-  final Map<String, dynamic> userData;
+  final Map<String, dynamic>? userData;
 
-  const OwnProfileScreen(
-      {super.key, required this.userData}); // Update constructor
+  const OwnProfileScreen({super.key, this.userData});
 
   @override
   State<OwnProfileScreen> createState() => _OwnProfileScreenState();
 }
 
 class _OwnProfileScreenState extends State<OwnProfileScreen> {
-  late List<String> uploadedPhotos;
-  late int followers;
-  late int following;
+  Map<String, dynamic> userData = {};
+  bool isLoading = true;
+  bool isFollowing = false;
 
   @override
   void initState() {
     super.initState();
-    uploadedPhotos = widget.userData['uploadedPhotos']?.cast<String>() ?? [];
-    followers = widget.userData['followers'] ?? 0;
-    following = widget.userData['following'] ?? 0;
+    _loadUserData();
   }
 
-  bool isFollowing = false;
+  Future<void> _loadUserData() async {
+    if (widget.userData != null) {
+      setState(() {
+        userData = widget.userData!;
+        _addDefaultPhotos();
+        isLoading = false;
+      });
+    } else {
+      userData = await fetchUserData();
+      setState(() {
+        _addDefaultPhotos();
+        isLoading = false;
+      });
+    }
+  }
+
+  void _addDefaultPhotos() {
+    // Only add placeholders for display, but they won't count as uploaded photos
+    userData['uploadedPhotos'] ??= [];
+    if (userData['uploadedPhotos'].isEmpty) {
+      userData['placeholders'] = List.generate(9, (index) => "");
+    } else {
+      userData['placeholders'] = [];
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchUserData() async {
+    await Future.delayed(const Duration(seconds: 2));
+    return {
+      'username': 'JAC',
+      'bio': 'This is a dynamically fetched bio.',
+      'uploadedPhotos': [],
+      'followers': 10,
+      'following': 5,
+    };
+  }
 
   void followUser() {
     setState(() {
       if (!isFollowing) {
-        followers++;
+        userData['followers'] = (userData['followers'] ?? 0) + 1;
       } else {
-        followers--;
+        userData['followers'] = (userData['followers'] ?? 0) - 1;
       }
       isFollowing = !isFollowing;
     });
@@ -38,6 +70,12 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -80,9 +118,12 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildCountColumn("Posts", uploadedPhotos.length.toString()),
-                _buildCountColumn("Followers", followers.toString()),
-                _buildCountColumn("Following", following.toString()),
+                _buildCountColumn("Posts",
+                    (userData['uploadedPhotos']?.length ?? 0).toString()),
+                _buildCountColumn(
+                    "Followers", (userData['followers'] ?? 0).toString()),
+                _buildCountColumn(
+                    "Following", (userData['following'] ?? 0).toString()),
               ],
             ),
           )
@@ -119,7 +160,7 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.userData['name'] ?? "Unknown User",
+            userData['username'] ?? "Unknown User",
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -127,7 +168,7 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
           ),
           const SizedBox(height: 5),
           Text(
-            widget.userData['bio'] ?? "No bio available",
+            userData['bio'] ?? "No bio available",
             style: const TextStyle(
               fontSize: 14,
               color: Colors.grey,
@@ -200,6 +241,9 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
   }
 
   Widget _buildGridView() {
+    final photos = userData['uploadedPhotos']!;
+    final placeholders = userData['placeholders']!;
+
     return AspectRatio(
       aspectRatio: 1,
       child: GridView.builder(
@@ -210,11 +254,18 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
           mainAxisSpacing: 2,
           childAspectRatio: 1.0,
         ),
-        itemCount: uploadedPhotos.length,
-        physics: const NeverScrollableScrollPhysics(),
+        itemCount: photos.length + placeholders.length,
         itemBuilder: (context, index) {
+          final isPlaceholder = index >= photos.length;
           return Container(
             color: const Color(0xFF37BE81),
+            alignment: Alignment.center,
+            child: Text(
+              isPlaceholder
+                  ? placeholders[index - photos.length]
+                  : photos[index],
+              style: const TextStyle(color: Colors.white),
+            ),
           );
         },
       ),

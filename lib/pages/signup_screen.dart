@@ -30,10 +30,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void signUp() async {
-    // URL for the API
     String apiUrl = "https://qeh35ldygc.execute-api.eu-central-1.amazonaws.com";
 
-    // Check if passwords match
     if (pwdController.text != confirmPwdController.text) {
       if (mounted) {
         showSnackbar(context, "Passwords don't match", true);
@@ -41,27 +39,48 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
-    // Make the HTTP request
-    var paramsApiUrl =
-        "$apiUrl/recyclingSignUp?email=${emailController.text}&pwd=${pwdController.text}&username=${usernameController.text}";
+    // Create the request body with default bio
+    final requestBody = {
+      "email": emailController.text,
+      "pwd": pwdController.text,
+      "username": usernameController.text,
+      "bio": "This is my bio!", // Default bio
+      "followers": 0, // Default value for new user
+      "following": 0, // Default value for new user
+      "uploadedPhotos": [] // Default empty array
+    };
 
-    var response = await http.post(Uri.parse(paramsApiUrl));
-
-    // Ensure the widget is still mounted before using BuildContext
-    if (mounted) {
-      // Show the appropriate snackbar message
-      showSnackbar(
-        context,
-        jsonDecode(response.body)['msg'],
-        response.statusCode == 400,
+    try {
+      // Make the HTTP request
+      var response = await http.post(
+        Uri.parse("$apiUrl/recyclingSignUp"),
+        body: jsonEncode(requestBody),
+        headers: {
+          "Content-Type": "application/json", // Set content type as JSON
+        },
       );
 
-      // Navigate to the Welcome Screen if the sign-up is successful
-      if (response.statusCode == 200) {
-        Navigator.pushReplacement(
+      if (mounted) {
+        final responseData = jsonDecode(response.body);
+        print("Signup response: $responseData"); // Debug the response
+
+        showSnackbar(
           context,
-          MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+          responseData['msg'],
+          response.statusCode == 400,
         );
+
+        if (response.statusCode == 200) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+          );
+        }
+      }
+    } catch (error) {
+      if (mounted) {
+        print("Signup error: $error"); // Debug error
+        showSnackbar(context, "An error occurred. Please try again.", true);
       }
     }
   }
@@ -131,7 +150,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const SignUpScreen(),
+                              builder: (context) => const WelcomeScreen(),
                             ),
                           );
                         },

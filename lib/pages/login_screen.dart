@@ -25,27 +25,37 @@ class _LoginScreenState extends State<LoginScreen> {
         "$apiUrl/recyclingLoginApp?email=${emailController.text}&pwd=${pwdController.text}";
 
     try {
+      // Make the API request
       var response = await http.put(Uri.parse(paramsApiUrl));
 
+      // Log the raw response for debugging
+      print("Raw Response: ${response.body}");
+
       if (mounted) {
+        // Parse the response
         var responseData = jsonDecode(response.body);
 
-        // Show message based on response
+        // Log the parsed response for further debugging
+        print("Parsed Response: $responseData");
+
+        // Display a message based on the response
         showSnackbar(context, responseData['msg'], response.statusCode == 400);
 
-        // If successful, navigate to MainNavigation
         if (response.statusCode == 200) {
-          var userData = responseData['user'] ?? {};
-
-          // Ensure necessary fields have default values
-          userData = {
-            'username': userData['username'] ?? 'Default User',
-            'bio': userData['bio'] ?? 'This is my bio!',
-            'followers': userData['followers'] ?? 0,
-            'following': userData['following'] ?? 0,
-            'uploadedPhotos': userData['uploadedPhotos'] ?? [],
+          // Adjusted parsing to use the actual response structure
+          var userData = {
+            'userId': responseData['userId'],
+            'username': responseData['username'] ?? 'Default User',
+            'bio': responseData['bio'] ?? 'This is my bio!',
+            'followers': responseData['followers'] ?? 0,
+            'following': responseData['following'] ?? 0,
+            'uploadedPhotos': responseData['uploadedPhotos'] ?? [],
           };
 
+          // Log the processed user data
+          print("Processed UserData: $userData");
+
+          // Navigate to MainNavigation with the user data
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -56,6 +66,10 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (error) {
       if (mounted) {
+        // Log the error for debugging
+        print("Error occurred during login: $error");
+
+        // Display a general error message to the user
         showSnackbar(context, "An error occurred. Please try again.", true);
       }
     }

@@ -8,11 +8,23 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
-  List<String> uploadedPhotos =
-      List.generate(9, (index) => "Placeholder $index"); // Example photo list
+  List<String> uploadedPhotos = []; // Example uploaded photo list
+  List<String> placeholders = []; // Placeholder list
   int followers = 0; // Initial followers count
   int following = 0; // Initial following count
   bool isFollowing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializePlaceholders();
+  }
+
+  void _initializePlaceholders() {
+    if (uploadedPhotos.isEmpty) {
+      placeholders = List.generate(9, (index) => "");
+    }
+  }
 
   void followUser() {
     setState(() {
@@ -236,12 +248,18 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           mainAxisSpacing: 2, // Equal vertical spacing
           childAspectRatio: 1.0, // Ensures all grid items are square
         ),
-        itemCount: uploadedPhotos.length,
-        physics:
-            const NeverScrollableScrollPhysics(), // Prevents internal scrolling
+        itemCount: uploadedPhotos.length + placeholders.length,
         itemBuilder: (context, index) {
+          final isPlaceholder = index >= uploadedPhotos.length;
           return Container(
-            color: const Color(0xFF37BE81), // Your placeholder color
+            color: const Color(0xFF37BE81),
+            alignment: Alignment.center,
+            child: Text(
+              isPlaceholder
+                  ? placeholders[index - uploadedPhotos.length]
+                  : uploadedPhotos[index],
+              style: const TextStyle(color: Colors.white),
+            ),
           );
         },
       ),
