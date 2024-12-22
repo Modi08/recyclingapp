@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ecofy/pages/settings_screen.dart';
 
 class OwnProfileScreen extends StatefulWidget {
   final Map<String, dynamic>? userData;
@@ -186,28 +187,38 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
         children: [
           Expanded(
             child: ElevatedButton(
-              onPressed: followUser,
+              onPressed: () {
+                // Navigate to the settings screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsScreen()),
+                );
+              },
               style: ElevatedButton.styleFrom(
-                backgroundColor: isFollowing
-                    ? Colors.grey.shade300
-                    : const Color(0xFF37BE81),
+                backgroundColor: const Color(0xFF37BE81),
               ),
-              child: Text(
-                isFollowing ? "Following" : "Follow",
+              child: const Text(
+                "Edit Your Profile",
                 style: TextStyle(
-                  color: isFollowing ? Colors.black : Colors.white,
+                  color: Colors.black,
                 ),
               ),
             ),
           ),
           const SizedBox(width: 8),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              // Navigate to the settings screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsScreen()),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.grey.shade300,
               shape: const CircleBorder(),
             ),
-            child: const Icon(Icons.keyboard_arrow_down, color: Colors.black),
+            child: const Icon(Icons.settings, color: Colors.black),
           ),
         ],
       ),

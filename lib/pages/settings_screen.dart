@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool isDarkMode = false;
 
   @override
   Widget build(BuildContext context) {
@@ -10,8 +17,256 @@ class SettingsScreen extends StatelessWidget {
         title: const Text('Settings'),
         backgroundColor: Colors.green,
       ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                hintText: 'Search for a setting...',
+                filled: true,
+                fillColor: Colors.grey.shade200,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: [
+                _buildSettingsCategory(
+                  context,
+                  icon: Icons.image,
+                  title: "Change Profile Picture",
+                  onTap: () {
+                    _showEditDialog(context, "Change Profile Picture",
+                        "Upload a new profile picture");
+                  },
+                ),
+                _buildSettingsCategory(
+                  context,
+                  icon: Icons.person,
+                  title: "Edit Username",
+                  onTap: () {
+                    _showEditDialog(
+                        context, "Edit Username", "Enter your new username");
+                  },
+                ),
+                _buildSettingsCategory(
+                  context,
+                  icon: Icons.info_outline,
+                  title: "Edit Bio",
+                  onTap: () {
+                    _showEditDialog(context, "Edit Bio", "Enter your new bio");
+                  },
+                ),
+                _buildSettingsCategory(
+                  context,
+                  icon: Icons.email_outlined,
+                  title: "Edit Email",
+                  onTap: () {
+                    _showEditDialog(
+                        context, "Edit Email", "Enter your new email");
+                  },
+                ),
+                _buildSettingsCategory(
+                  context,
+                  icon: Icons.lock_outline,
+                  title: "Change Password",
+                  onTap: () {
+                    _showEditDialog(
+                        context, "Change Password", "Enter your new password");
+                  },
+                ),
+                _buildSettingsCategory(
+                  context,
+                  icon: Icons.notifications_active,
+                  title: "Notifications",
+                  onTap: () {
+                    _showEditDialog(context, "Notifications",
+                        "Change notification preferences");
+                  },
+                ),
+                _buildSettingsCategory(
+                  context,
+                  icon: Icons.brightness_6,
+                  title: "Appearance",
+                  onTap: () {
+                    _toggleDarkModeDialog(context);
+                  },
+                ),
+                _buildSettingsCategory(
+                  context,
+                  icon: Icons.help_outline,
+                  title: "Help & Support",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HelpSupportScreen()),
+                    );
+                  },
+                ),
+                _buildSettingsCategory(
+                  context,
+                  icon: Icons.info,
+                  title: "About",
+                  onTap: () {
+                    _showAboutDialog(context);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsCategory(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 32, color: Colors.green),
+            const SizedBox(width: 16),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditDialog(BuildContext context, String title, String hint) {
+    final TextEditingController controller = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(hintText: hint),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("About"),
+          content:
+              const Text("This is a demo settings page created using Flutter."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _toggleDarkModeDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Appearance"),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Dark Mode"),
+              Switch(
+                value: isDarkMode,
+                onChanged: (value) {
+                  setState(() {
+                    isDarkMode = value;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class HelpSupportScreen extends StatelessWidget {
+  const HelpSupportScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Help & Support'),
+        backgroundColor: Colors.green,
+      ),
       body: const Center(
-        child: Text('Settings Page'),
+        child: Text('Help & Support Page'),
       ),
     );
   }
