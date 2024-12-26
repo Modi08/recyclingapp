@@ -1,14 +1,6 @@
-// ignore_for_file: avoid_print
-
 import 'dart:convert';
+import 'package:ecofy/services/general/localstorage.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-
-class Cords {
-  final double lat;
-  final double lon;
-
-  Cords(this.lat, this.lon);
-}
 
 WebSocketChannel connectToWebsocket(String paramsApiUrl) {
   print("Connected to WebSocket");
@@ -16,7 +8,7 @@ WebSocketChannel connectToWebsocket(String paramsApiUrl) {
   return socket;
 }
 
-void listendMsg(WebSocketChannel socket, Function refreshPage) {
+void listendMsg(WebSocketChannel socket, DatabaseService database) {
   socket.stream.listen(
     (data) {
       try {
@@ -26,14 +18,7 @@ void listendMsg(WebSocketChannel socket, Function refreshPage) {
         if (parsedData.containsKey("data")) {
           final res = parsedData["data"];
 
-          if (res.containsKey("statusCode")) {
-            processMsg(res["statusCode"], res, socket, refreshPage);
-          } else if (res.containsKey("users")) {
-            print("Received users: ${res['users']}");
-            refreshPage(res["users"]);
-          } else {
-            print("Unhandled data structure: $res");
-          }
+          processMsg(res["statusCode"], res, socket, database);
         } else {
           print("Message does not contain 'data': $parsedData");
         }
@@ -50,8 +35,8 @@ void listendMsg(WebSocketChannel socket, Function refreshPage) {
   );
 }
 
-void processMsg(int statusCode, Map<String, dynamic> data,
-    WebSocketChannel socket, Function refreshPage) {
+void processMsg(
+    int statusCode, Map<String, dynamic> data, WebSocketChannel socket, DatabaseService database) {
   print("Processing WebSocket message with statusCode: $statusCode");
   switch (statusCode) {
     case 100:
@@ -59,7 +44,6 @@ void processMsg(int statusCode, Map<String, dynamic> data,
       break;
     case 200:
       print("Success: ${data["message"]}");
-      refreshPage(); // Trigger UI refresh
       break;
     default:
       print("Unhandled statusCode: $statusCode with data: $data");

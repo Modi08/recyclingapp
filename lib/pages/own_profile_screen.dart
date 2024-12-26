@@ -1,18 +1,26 @@
+import 'package:ecofy/pages/upload_screen.dart';
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:flutter/material.dart';
 import 'package:ecofy/pages/settings_screen.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class OwnProfileScreen extends StatefulWidget {
-  final DatabaseService databaseService;
+  final DatabaseService database;
+  final String userId;
+  final WebSocketChannel socket;
 
-  const OwnProfileScreen({super.key, required this.databaseService});
+  const OwnProfileScreen(
+      {super.key,
+      required this.database,
+      required this.userId,
+      required this.socket});
 
   @override
   State<OwnProfileScreen> createState() => _OwnProfileScreenState();
 }
 
 class _OwnProfileScreenState extends State<OwnProfileScreen> {
-  Map<String, dynamic> userData = {};
+  late Map<String, dynamic> userData;
   bool isLoading = true;
   bool isFollowing = false;
 
@@ -23,20 +31,16 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
   }
 
   Future<void> _loadUserData() async {
-    if (widget.databaseService != null) {
+    widget.database.queryById(widget.userId).then((data) {
+      //No needed for If statement as the page will only switch once data is saved
       setState(() {
         //change bellow
-        //userData = widget.databaseService;
+        //print('$data, ${widget.userId}');
+        userData = {...data!};
         _addDefaultPhotos();
         isLoading = false;
       });
-    } else {
-      userData = await fetchUserData();
-      setState(() {
-        _addDefaultPhotos();
-        isLoading = false;
-      });
-    }
+    });
   }
 
   void _addDefaultPhotos() {
@@ -47,17 +51,6 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
     } else {
       userData['placeholders'] = [];
     }
-  }
-
-  Future<Map<String, dynamic>> fetchUserData() async {
-    await Future.delayed(const Duration(seconds: 2));
-    return {
-      'username': 'JAC',
-      'bio': 'This is a dynamically fetched bio.',
-      'uploadedPhotos': [],
-      'followers': 10,
-      'following': 5,
-    };
   }
 
   void followUser() {
@@ -108,14 +101,23 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ClipOval(
-            child: Container(
-              width: 80,
-              height: 80,
-              color: Colors.grey.shade300,
-              child: const Icon(Icons.person, size: 40, color: Colors.grey),
-            ),
-          ),
+          OutlinedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Accountpage(
+                              userId: widget.userId,
+                              socket: widget.socket,
+                              database: widget.database,
+                            )));
+              },
+              child: CircleAvatar(
+                // Change to allow for network images to be displayed
+                radius: 64,
+                backgroundImage: NetworkImage(
+                    "https://ecofy-app.s3.eu-central-1.amazonaws.com/istockphoto-1130884625-612x612.jpg"),
+              )),
           const SizedBox(width: 20),
           Expanded(
             child: Row(
@@ -193,7 +195,8 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
                 // Navigate to the settings screen
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const SettingsScreen()),
                 );
               },
               style: ElevatedButton.styleFrom(

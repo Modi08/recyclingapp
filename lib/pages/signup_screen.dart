@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 import 'package:ecofy/pages/login_screen.dart';
-import 'package:ecofy/pages/own_profile_screen.dart';
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:ecofy/services/general/main_navigation.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +10,10 @@ import 'package:ecofy/components/button.dart';
 import 'package:ecofy/components/mytextfield.dart';
 import 'package:ecofy/services/general/colors.dart';
 import 'package:ecofy/services/general/snackbar.dart';
-import 'package:sqflite/sqflite.dart';
 
 class SignUpScreen extends StatefulWidget {
-  final DatabaseService databaseService;
-  const SignUpScreen({super.key, required this.databaseService});
+  final DatabaseService database;
+  const SignUpScreen({super.key, required this.database});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -81,13 +79,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
         );
 
         if (response.statusCode == 200) {
-          widget.databaseService.replace(responseData["user"]).then((data) {
+          widget.database.replace(responseData["user"]).then((data) {
             //Saving data from response to SQLite table
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      MainNavigation(databaseService: widget.databaseService)),
+                      MainNavigation(database: widget.database, userId: responseData["user"]["userId"],)),
             );
           });
         }
@@ -166,7 +164,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => LoginScreen(
-                                  databaseService: widget.databaseService),
+                                  database: widget.database),
                             ),
                           );
                         },

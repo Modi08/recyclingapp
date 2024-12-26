@@ -21,31 +21,6 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
   @override
   void initState() {
     super.initState();
-    _connectToWebSocket();
-  }
-
-  void _connectToWebSocket() {
-    print("Connecting to WebSocket...");
-    String socketUrl =
-        "wss://ylcg91rcr9.execute-api.eu-central-1.amazonaws.com/prod"; // Replace with your WebSocket URL
-    socket = connectToWebsocket(socketUrl);
-
-    // Send an initial message to request users if required by the server
-    socket.sink
-        .add(jsonEncode({"action": "getUsers"})); // Replace with actual action
-
-    // Listen for messages
-    listendMsg(socket, _refreshUsers);
-
-    // Timeout handling
-    Future.delayed(const Duration(seconds: 10), () {
-      if (isLoading) {
-        print("Timeout: No response from WebSocket server");
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
   }
 
   void _refreshUsers(List<Map<String, dynamic>> users) {

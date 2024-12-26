@@ -2,28 +2,33 @@ import 'dart:convert';
 
 import 'package:aws_s3_upload_lite/aws_s3_upload_lite.dart';
 import 'package:ecofy/services/general/image_upload.dart';
+import 'package:ecofy/services/general/localstorage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class Profilepage extends StatefulWidget {
+class Accountpage extends StatefulWidget {
   final String userId;
-  final WebSocketChannel socketChannel;
-  const Profilepage(
-      {super.key, required this.userId, required this.socketChannel});
+  final WebSocketChannel socket;
+  final DatabaseService database;
+  const Accountpage(
+      {super.key,
+      required this.userId,
+      required this.socket,
+      required this.database});
 
   @override
-  State<Profilepage> createState() => _ProfilepageState();
+  State<Accountpage> createState() => _AccountpageState();
 }
 
-class _ProfilepageState extends State<Profilepage> {
+class _AccountpageState extends State<Accountpage> {
   Uint8List? profilePic;
   String? username;
 
   void selectImage() async {
-    await dotenv.load();
+    await dotenv.load(fileName: '.env');
     Uint8List? img = await pickImage(ImageSource.gallery);
     setState(() {
       profilePic = img;
@@ -42,9 +47,9 @@ class _ProfilepageState extends State<Profilepage> {
       var profilePicURL =
           "https://ecofy-app.s3.eu-central-1.amazonaws.com/profilePics/${widget.userId}.png";
 
-      //saveDataToLocalStorage("profilePic", profilePicURL);
+      widget.database.updateValue("profilePic", profilePicURL, widget.userId);
 
-      widget.socketChannel.sink.add(jsonEncode({
+      widget.socket.sink.add(jsonEncode({
         "action": "saveProfilePic",
         "userId": widget.userId,
         "profilePic": profilePicURL
@@ -54,11 +59,6 @@ class _ProfilepageState extends State<Profilepage> {
 
   @override
   Widget build(BuildContext context) {
-    /*readDataFromLocalStorage("username").then((data) {
-      setState(() {
-        username = data;
-      });
-    });*/
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 100,

@@ -12,8 +12,8 @@ import 'package:ecofy/pages/signup_screen.dart';
 import 'package:ecofy/services/general/main_navigation.dart'; // Import MainNavigation
 
 class LoginScreen extends StatefulWidget {
-  final DatabaseService databaseService;
-  const LoginScreen({super.key, required this.databaseService});
+  final DatabaseService database;
+  const LoginScreen({super.key, required this.database});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -40,19 +40,19 @@ class _LoginScreenState extends State<LoginScreen> {
         var responseData = jsonDecode(response.body);
 
         // Log the parsed response for further debugging
-        //print("Parsed Response: $responseData");
+        print("Parsed Response: $responseData");
 
         // Display a message based on the response
         showSnackbar(context, responseData['msg'], response.statusCode == 400);
 
         if (response.statusCode == 200) {
-          widget.databaseService.replace(responseData["user"]).then((data) {
+          widget.database.replace(responseData["user"]).then((data) {
             //Saving data from response to SQLite table
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      MainNavigation(databaseService: widget.databaseService)),
+                      MainNavigation(database: widget.database, userId: responseData["user"]["userId"],)),
             );
           });
         }
@@ -116,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SignUpScreen(databaseService: widget.databaseService),
+                              builder: (context) => SignUpScreen(database: widget.database),
                             ),
                           );
                         },

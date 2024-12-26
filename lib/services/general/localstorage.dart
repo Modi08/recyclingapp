@@ -87,7 +87,7 @@ class DatabaseService {
   Future<Database> initDatabase() async {
     final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, databaseName);
-    databaseFactory.deleteDatabase(path);  //Need to be uncommented if scheme is changes
+    //databaseFactory.deleteDatabase(path);  //Need to be uncommented if scheme is changes
 
     return await openDatabase(path,
         version: databaseVersion, onCreate: (db, version) async {
@@ -153,6 +153,13 @@ class DatabaseService {
       } else {
         return await update(row);
       }
+    });
+  }
+
+  Future<int> updateValue(String key, dynamic value, String userId) async {
+    return await queryById(userId).then((user) {
+      user![key] = value;
+      return update(user);
     });
   }
 }

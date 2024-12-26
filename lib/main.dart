@@ -14,7 +14,7 @@ class Ecofy extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DatabaseService databaseService = DatabaseService.instance;
+    final DatabaseService database = DatabaseService.instance;
 
     return MaterialApp(
       title: 'Recycling App',
@@ -22,8 +22,8 @@ class Ecofy extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const WelcomeScreen(),
-        '/signup': (context) => SignUpScreen(databaseService: databaseService),
-        '/login': (context) => LoginScreen(databaseService: databaseService),
+        '/signup': (context) => SignUpScreen(database: database),
+        '/login': (context) => LoginScreen(database: database),
       },
     );
   }
