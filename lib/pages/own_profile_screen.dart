@@ -1,10 +1,11 @@
+import 'package:ecofy/services/general/localstorage.dart';
 import 'package:flutter/material.dart';
 import 'package:ecofy/pages/settings_screen.dart';
 
 class OwnProfileScreen extends StatefulWidget {
-  final Map<String, dynamic>? userData;
+  final DatabaseService databaseService;
 
-  const OwnProfileScreen({super.key, this.userData});
+  const OwnProfileScreen({super.key, required this.databaseService});
 
   @override
   State<OwnProfileScreen> createState() => _OwnProfileScreenState();
@@ -22,9 +23,10 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
   }
 
   Future<void> _loadUserData() async {
-    if (widget.userData != null) {
+    if (widget.databaseService != null) {
       setState(() {
-        userData = widget.userData!;
+        //change bellow
+        //userData = widget.databaseService;
         _addDefaultPhotos();
         isLoading = false;
       });
@@ -191,7 +193,7 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
                 // Navigate to the settings screen
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SettingsScreen()),
+                  MaterialPageRoute(builder: (context) => const SettingsScreen()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -211,7 +213,7 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
               // Navigate to the settings screen
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SettingsScreen()),
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
               );
             },
             style: ElevatedButton.styleFrom(

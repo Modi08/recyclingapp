@@ -5,7 +5,6 @@ import 'package:ecofy/services/general/image_upload.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:ecofy/services/general/localstorage.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -42,7 +41,8 @@ class _ProfilepageState extends State<Profilepage> {
 
       var profilePicURL =
           "https://ecofy-app.s3.eu-central-1.amazonaws.com/profilePics/${widget.userId}.png";
-      saveDataToLocalStorage("profilePic", profilePicURL);
+
+      //saveDataToLocalStorage("profilePic", profilePicURL);
 
       widget.socketChannel.sink.add(jsonEncode({
         "action": "saveProfilePic",
@@ -54,11 +54,11 @@ class _ProfilepageState extends State<Profilepage> {
 
   @override
   Widget build(BuildContext context) {
-    readDataFromLocalStorage("username").then((data) {
+    /*readDataFromLocalStorage("username").then((data) {
       setState(() {
         username = data;
       });
-    });
+    });*/
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 100,

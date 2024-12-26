@@ -1,13 +1,15 @@
+import 'package:ecofy/services/general/localstorage.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 import '../../pages/own_profile_screen.dart';
 import '../../pages/leaderboard.dart';
 import '../../pages/all_users_screen.dart'; // New screen
 
 class MainNavigation extends StatefulWidget {
-  final Map<String, dynamic> userData; // Accept user data
+  final DatabaseService databaseService; // Accept user data
 
   const MainNavigation(
-      {super.key, required this.userData}); // Add required parameter
+      {super.key, required this.databaseService}); // Add required parameter
 
   @override
   _MainNavigationState createState() => _MainNavigationState();
@@ -25,7 +27,7 @@ class _MainNavigationState extends State<MainNavigation> {
   Widget _getPage(int index) {
     switch (index) {
       case 0:
-        return OwnProfileScreen(userData: widget.userData); // Pass userData
+        return OwnProfileScreen(databaseService: widget.databaseService); // Pass userData
       case 1:
         return const Leaderboard();
       case 2:

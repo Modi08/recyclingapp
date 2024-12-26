@@ -1,16 +1,21 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
+import 'package:ecofy/pages/login_screen.dart';
+import 'package:ecofy/pages/own_profile_screen.dart';
+import 'package:ecofy/services/general/localstorage.dart';
+import 'package:ecofy/services/general/main_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ecofy/components/button.dart';
 import 'package:ecofy/components/mytextfield.dart';
 import 'package:ecofy/services/general/colors.dart';
 import 'package:ecofy/services/general/snackbar.dart';
-import 'package:ecofy/pages/welcome_screen.dart';
+import 'package:sqflite/sqflite.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  final DatabaseService databaseService;
+  const SignUpScreen({super.key, required this.databaseService});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -45,11 +50,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final requestBody = {
       "email": emailController.text,
       "pwd": pwdController.text,
-      "username": usernameController.text,
+      "username": usernameController.text
+      /*
       "bio": "This is my bio!", // Default bio
       "followers": 0, // Default value for new user
       "following": 0, // Default value for new user
-      "uploadedPhotos": [] // Default empty array
+      "uploadedPhotos": [] // Default empty array*/
+
+      // Added on server side
     };
 
     try {
@@ -64,7 +72,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       if (mounted) {
         final responseData = jsonDecode(response.body);
-        print("Signup response: $responseData"); // Debug the response
+        //print("Signup response: ${responseData["user"]}"); // Debug the response
 
         showSnackbar(
           context,
@@ -73,10 +81,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
         );
 
         if (response.statusCode == 200) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-          );
+          widget.databaseService.replace(responseData["user"]).then((data) {
+            //Saving data from response to SQLite table
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      MainNavigation(databaseService: widget.databaseService)),
+            );
+          });
         }
       }
     } catch (error) {
@@ -152,7 +165,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const WelcomeScreen(),
+                              builder: (context) => LoginScreen(
+                                  databaseService: widget.databaseService),
                             ),
                           );
                         },
