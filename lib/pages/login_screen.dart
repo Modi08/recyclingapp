@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:ecofy/components/button.dart';
 import 'package:ecofy/components/mytextfield.dart';
@@ -22,9 +23,13 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final pwdController = TextEditingController();
+  late String? apiUrl;
 
   Future<void> login() async {
-    String apiUrl = "https://qeh35ldygc.execute-api.eu-central-1.amazonaws.com";
+    await dotenv.load();
+
+    apiUrl = dotenv.env["httpURL"];
+
     var paramsApiUrl =
         "$apiUrl/recyclingLoginApp?email=${emailController.text}&pwd=${pwdController.text}";
 

@@ -1,7 +1,21 @@
+import 'dart:convert';
+
+import 'package:ecofy/services/general/image_upload.dart';
+import 'package:ecofy/services/general/localstorage.dart';
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  final DatabaseService database;
+  final Function refreshData;
+  final String userId;
+  final WebSocketChannel socket;
+  const SettingsScreen(
+      {super.key,
+      required this.database,
+      required this.refreshData,
+      required this.userId,
+      required this.socket});
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -44,8 +58,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.image,
                   title: "Change Profile Picture",
                   onTap: () {
-                    _showEditDialog(context, "Change Profile Picture",
-                        "Upload a new profile picture");
+                    selectImage(widget.userId, widget.database, widget.socket);
                   },
                 ),
                 _buildSettingsCategory(
@@ -53,8 +66,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.person,
                   title: "Edit Username",
                   onTap: () {
-                    _showEditDialog(
-                        context, "Edit Username", "Enter your new username");
+                    _showEditDialog(context, "Edit Username",
+                        "Enter your new username", "username");
                   },
                 ),
                 _buildSettingsCategory(
@@ -62,7 +75,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.info_outline,
                   title: "Edit Bio",
                   onTap: () {
-                    _showEditDialog(context, "Edit Bio", "Enter your new bio");
+                    _showEditDialog(
+                        context, "Edit Bio", "Enter your new bio", "bio");
                   },
                 ),
                 _buildSettingsCategory(
@@ -71,7 +85,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: "Edit Email",
                   onTap: () {
                     _showEditDialog(
-                        context, "Edit Email", "Enter your new email");
+                        context, "Edit Email", "Enter your new email", "email");
                   },
                 ),
                 _buildSettingsCategory(
@@ -79,8 +93,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.lock_outline,
                   title: "Change Password",
                   onTap: () {
-                    _showEditDialog(
-                        context, "Change Password", "Enter your new password");
+                    _showEditDialog(context, "Change Password",
+                        "Enter your new password", "pwd");
                   },
                 ),
                 _buildSettingsCategory(
@@ -89,7 +103,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: "Notifications",
                   onTap: () {
                     _showEditDialog(context, "Notifications",
-                        "Change notification preferences");
+                        "Change notification preferences", "");
                   },
                 ),
                 _buildSettingsCategory(
@@ -168,7 +182,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showEditDialog(BuildContext context, String title, String hint) {
+  void _showEditDialog(
+      BuildContext context, String title, String hint, String key) {
     final TextEditingController controller = TextEditingController();
 
     showDialog(
@@ -184,6 +199,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
+                if (key != "") {
+                  widget.socket.sink.add(jsonEncode({
+                    "action": "updateUserData",
+                    "userId": widget.userId,
+                    "key": key,
+                    "value": controller.text
+                  }));
+                  widget.database
+                      .updateValue(key, controller.text, widget.userId).then((data) {
+                        widget.refreshData();
+                      });
+                }
               },
               child: const Text('Save'),
             ),

@@ -5,6 +5,7 @@ import 'package:ecofy/pages/login_screen.dart';
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:ecofy/services/general/main_navigation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:ecofy/components/button.dart';
 import 'package:ecofy/components/mytextfield.dart';
@@ -24,6 +25,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final pwdController = TextEditingController();
   final confirmPwdController = TextEditingController();
   final usernameController = TextEditingController();
+  late String? apiUrl;
 
   @override
   void dispose() {
@@ -35,7 +37,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void signUp() async {
-    String apiUrl = "https://qeh35ldygc.execute-api.eu-central-1.amazonaws.com";
+    await dotenv.load();
+
+    apiUrl = dotenv.env["httpURL"];
 
     if (pwdController.text != confirmPwdController.text) {
       if (mounted) {
@@ -85,7 +89,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      MainNavigation(database: widget.database, userId: responseData["user"]["userId"],)),
+                      MainNavigation(database: widget.database, userId: responseData["user"]["userId"])),
             );
           });
         }

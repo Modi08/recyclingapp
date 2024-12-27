@@ -10,7 +10,7 @@ class User {
   final String bio;
   final int followers;
   final int following;
-  final List<String> uploadedPhotos;
+  final List<String> countUploadedPhotos;
   final String profilePic;
 
   User({
@@ -22,7 +22,7 @@ class User {
     required this.bio,
     required this.followers,
     required this.following,
-    required this.uploadedPhotos,
+    required this.countUploadedPhotos,
     required this.profilePic
   });
 
@@ -36,7 +36,7 @@ class User {
       "bio": bio,
       "followers": followers,
       "following": following,
-      "uploadedPhotos": uploadedPhotos,
+      "countUploadedPhotos": countUploadedPhotos,
       "profilePic": profilePic
     };
   }
@@ -51,7 +51,7 @@ class User {
       bio: map["bio"],
       followers: map["followers"],
       following: map["following"],
-      uploadedPhotos: map["uploadedPhotos"],
+      countUploadedPhotos: map["countUploadedPhotos"],
       profilePic: map["profilePic"]
     );
   }
@@ -70,7 +70,7 @@ class DatabaseService {
   static const columnConnectionId = "connectionId";
   static const columnFollowers = "followers";
   static const columnFollowing = "following";
-  static const columnUploadedPhotos = "uploadedPhotos";
+  static const columncountUploadedPhotos = "countUploadedPhotos";
   static const columnProfilePic = "profilePic";
 
   // Singleton pattern to ensure only one instance of the database
@@ -100,7 +100,7 @@ class DatabaseService {
             $columnBio TEXT,
             $columnFollowing INTEGER,
             $columnFollowers INTEGER,
-            $columnUploadedPhotos TEXT,
+            $columncountUploadedPhotos INTEGER,
             $columnConnectionId TEXT,
             $columnProfilePic TEXT
           )
@@ -157,8 +157,9 @@ class DatabaseService {
   }
 
   Future<int> updateValue(String key, dynamic value, String userId) async {
-    return await queryById(userId).then((user) {
-      user![key] = value;
+    return await queryById(userId).then((data) {
+      Map<String, dynamic> user = {...data!};
+      user[key] = value;
       return update(user);
     });
   }

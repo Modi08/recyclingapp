@@ -1,64 +1,64 @@
-import 'package:ecofy/pages/upload_screen.dart';
+import 'package:ecofy/services/general/image_upload.dart';
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:flutter/material.dart';
 import 'package:ecofy/pages/settings_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+// ignore: must_be_immutable
 class OwnProfileScreen extends StatefulWidget {
-  final DatabaseService database;
+  Map<String, dynamic> userData;
   final String userId;
   final WebSocketChannel socket;
+  final DatabaseService database;
+  final Function refreshData;
 
-  const OwnProfileScreen(
+  OwnProfileScreen(
       {super.key,
-      required this.database,
+      required this.userData,
       required this.userId,
-      required this.socket});
+      required this.socket,
+      required this.database,
+      required this.refreshData});
 
   @override
   State<OwnProfileScreen> createState() => _OwnProfileScreenState();
 }
 
 class _OwnProfileScreenState extends State<OwnProfileScreen> {
-  late Map<String, dynamic> userData;
   bool isLoading = true;
   bool isFollowing = false;
+  // ignore: non_constant_identifier_names
+  String? S3Url;
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-  }
-
-  Future<void> _loadUserData() async {
-    widget.database.queryById(widget.userId).then((data) {
-      //No needed for If statement as the page will only switch once data is saved
-      setState(() {
-        //change bellow
-        //print('$data, ${widget.userId}');
-        userData = {...data!};
-        _addDefaultPhotos();
-        isLoading = false;
+    setState(() {
+      dotenv.load().then((data) {
+        S3Url = dotenv.env["S3BucketURL"];
       });
+      //_addDefaultPhotos();
+      isLoading = false;
     });
   }
 
-  void _addDefaultPhotos() {
+  /*void _addDefaultPhotos() {
     // Only add placeholders for display, but they won't count as uploaded photos
-    userData['uploadedPhotos'] ??= [];
-    if (userData['uploadedPhotos'].isEmpty) {
-      userData['placeholders'] = List.generate(9, (index) => "");
+    //widget.userData['countUploadedPhotos'] ??= [];
+    if (widget.userData['countUploadedPhotos'] == 0) {
+      widget.userData['placeholders'] = List.generate(9, (index) => "");
     } else {
-      userData['placeholders'] = [];
+      widget.userData['placeholders'] = [];
     }
-  }
+  }*/
 
   void followUser() {
     setState(() {
       if (!isFollowing) {
-        userData['followers'] = (userData['followers'] ?? 0) + 1;
+        widget.userData['followers'] = (widget.userData['followers'] ?? 0) + 1;
       } else {
-        userData['followers'] = (userData['followers'] ?? 0) - 1;
+        widget.userData['followers'] = (widget.userData['followers'] ?? 0) - 1;
       }
       isFollowing = !isFollowing;
     });
@@ -86,7 +86,11 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
                 _buildButtons(),
                 const Divider(),
                 _buildTabBar(),
-                _buildTabView(),
+                S3Url == null
+                    ? const Center(
+                        child: SizedBox(
+                            child: CircularProgressIndicator.adaptive()))
+                    : _buildTabView(),
               ],
             ),
           ),
@@ -102,21 +106,20 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           OutlinedButton(
+              style: ButtonStyle(
+                  shape:
+                      WidgetStatePropertyAll<OutlinedBorder>(CircleBorder())),
               onPressed: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Accountpage(
-                              userId: widget.userId,
-                              socket: widget.socket,
-                              database: widget.database,
-                            )));
+                selectImage(widget.userId, widget.database, widget.socket);
+                widget.refreshData();
               },
               child: CircleAvatar(
                 // Change to allow for network images to be displayed
                 radius: 64,
-                backgroundImage: NetworkImage(
-                    "https://ecofy-app.s3.eu-central-1.amazonaws.com/istockphoto-1130884625-612x612.jpg"),
+                backgroundImage: widget.userData["profilePic"] == ""
+                    ? NetworkImage(
+                        "https://ecofy-app.s3.eu-central-1.amazonaws.com/istockphoto-1130884625-612x612.jpg")
+                    : NetworkImage(widget.userData["profilePic"]),
               )),
           const SizedBox(width: 20),
           Expanded(
@@ -124,11 +127,11 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildCountColumn("Posts",
-                    (userData['uploadedPhotos']?.length ?? 0).toString()),
+                    (widget.userData['countUploadedPhotos']).toString()),
                 _buildCountColumn(
-                    "Followers", (userData['followers'] ?? 0).toString()),
+                    "Followers", (widget.userData['followers']).toString()),
                 _buildCountColumn(
-                    "Following", (userData['following'] ?? 0).toString()),
+                    "Following", (widget.userData['following']).toString()),
               ],
             ),
           )
@@ -165,7 +168,7 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            userData['username'] ?? "Unknown User",
+            widget.userData['username'] ?? "Unknown User",
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -173,7 +176,7 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
           ),
           const SizedBox(height: 5),
           Text(
-            userData['bio'] ?? "No bio available",
+            widget.userData['bio'] ?? "No bio available",
             style: const TextStyle(
               fontSize: 14,
               color: Colors.grey,
@@ -193,17 +196,25 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
             child: ElevatedButton(
               onPressed: () {
                 // Navigate to the settings screen
-                Navigator.push(
+                /*Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const SettingsScreen()),
-                );
+                      builder: (context) => SettingsScreen(
+                            database: widget.database,
+                            refreshData: widget.refreshData,
+                            userId: widget.userId,
+                            socket: widget.socket,
+                          )),
+                );*/
+                selectImage(widget.userId, widget.database, widget.socket,
+                    isProfilePic: false,
+                    count: widget.userData["countUploadedPhotos"]);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF37BE81),
               ),
               child: const Text(
-                "Edit Your Profile",
+                "Upload Picture of Recycling",
                 style: TextStyle(
                   color: Colors.black,
                 ),
@@ -216,7 +227,12 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
               // Navigate to the settings screen
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                MaterialPageRoute(
+                    builder: (context) => SettingsScreen(
+                        database: widget.database,
+                        refreshData: widget.refreshData,
+                        userId: widget.userId,
+                        socket: widget.socket)),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -257,8 +273,7 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
   }
 
   Widget _buildGridView() {
-    final photos = userData['uploadedPhotos']!;
-    final placeholders = userData['placeholders']!;
+    final countPhotos = widget.userData['countUploadedPhotos']!;
 
     return AspectRatio(
       aspectRatio: 1,
@@ -270,19 +285,13 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
           mainAxisSpacing: 2,
           childAspectRatio: 1.0,
         ),
-        itemCount: photos.length + placeholders.length,
+        itemCount: countPhotos,
         itemBuilder: (context, index) {
-          final isPlaceholder = index >= photos.length;
           return Container(
-            color: const Color(0xFF37BE81),
-            alignment: Alignment.center,
-            child: Text(
-              isPlaceholder
-                  ? placeholders[index - photos.length]
-                  : photos[index],
-              style: const TextStyle(color: Colors.white),
-            ),
-          );
+              color: const Color(0xFF37BE81),
+              alignment: Alignment.center,
+              child: Image.network('$S3Url/${widget.userId}/index.png'),
+              );
         },
       ),
     );

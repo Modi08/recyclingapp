@@ -18,11 +18,6 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
   bool isLoading = true;
   late WebSocketChannel socket;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void _refreshUsers(List<Map<String, dynamic>> users) {
     setState(() {
       allUsers = users;

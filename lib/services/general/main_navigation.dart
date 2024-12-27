@@ -1,6 +1,7 @@
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:ecofy/services/general/socket.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../pages/own_profile_screen.dart';
 import '../../pages/leaderboard.dart';
@@ -22,6 +23,7 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
   WebSocketChannel? socket;
+  late Map<String, dynamic> userData;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -34,9 +36,12 @@ class _MainNavigationState extends State<MainNavigation> {
       switch (index) {
         case 0:
           return OwnProfileScreen(
-              database: widget.database,
-              userId: widget.userId,
-              socket: socket!); // Pass userData
+            database: widget.database,
+            userId: widget.userId,
+            socket: socket!,
+            userData: userData,
+            refreshData: _loadUserData
+          );
         case 1:
           return const Leaderboard();
         case 2:
@@ -50,15 +55,29 @@ class _MainNavigationState extends State<MainNavigation> {
     }
   }
 
+  void _loadUserData() {
+    widget.database.queryById(widget.userId).then((data) {
+      //No needed for If statement as the page will only switch once data is saved
+      setState(() {
+        //print('$data, ${widget.userId}');
+        userData = {...data!};
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    String socketUrl =
-        "wss://a5oiyxbpy0.execute-api.eu-central-1.amazonaws.com/prod?userId=${widget.userId}";
-    setState(() {
-      socket = connectToWebsocket(socketUrl);
+    _loadUserData();
+    dotenv.load().then((data) {
+      String? websocketURL = dotenv.env["websocketURL"];
+
+      String socketUrl = "$websocketURL?userId=${widget.userId}";
+      setState(() {
+        socket = connectToWebsocket(socketUrl);
+      });
+      listendMsg(socket!, widget.database);
     });
-    listendMsg(socket!, widget.database);
   }
 
   @override

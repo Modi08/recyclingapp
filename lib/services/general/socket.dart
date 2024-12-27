@@ -39,11 +39,10 @@ void processMsg(
     int statusCode, Map<String, dynamic> data, WebSocketChannel socket, DatabaseService database) {
   print("Processing WebSocket message with statusCode: $statusCode");
   switch (statusCode) {
-    case 100:
-      print("Message is empty");
+    case 100:// No Return Value
       break;
-    case 200:
-      print("Success: ${data["message"]}");
+    case 200:// No Relevent Return Value
+      print("Success: ${data["msg"]}");
       break;
     default:
       print("Unhandled statusCode: $statusCode with data: $data");
