@@ -14,7 +14,13 @@ import 'package:ecofy/services/general/snackbar.dart';
 
 class SignUpScreen extends StatefulWidget {
   final DatabaseService database;
-  const SignUpScreen({super.key, required this.database});
+  final double height;
+  final double width;
+  const SignUpScreen(
+      {super.key,
+      required this.database,
+      required this.height,
+      required this.width});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -88,8 +94,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      MainNavigation(database: widget.database, userId: responseData["user"]["userId"])),
+                  builder: (context) => MainNavigation(
+                      database: widget.database,
+                      userId: responseData["user"]["userId"],
+                      width: widget.width,
+                      height: widget.height)),
             );
           });
         }
@@ -118,57 +127,59 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 50),
+                  SizedBox(height: widget.height * 0.06),
                   Icon(
                     Icons.recycling_sharp,
-                    size: 80,
+                    size: widget.height * 0.09,
                     color: logoColor,
                   ),
-                  const SizedBox(height: 50),
+                  SizedBox(height: widget.height * 0.06),
                   const Text(
                     "Let's create your account",
                     style: TextStyle(fontSize: 16),
                   ),
-                  const SizedBox(height: 25),
+                  SizedBox(height: widget.height * 0.03),
                   MyTextField(
                     controller: usernameController,
                     hintText: "Username",
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: widget.height * 0.01),
                   MyTextField(
                     controller: emailController,
                     hintText: "Email",
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: widget.height * 0.01),
                   MyTextField(
                     controller: pwdController,
                     hintText: "Password",
                     obscureText: true,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: widget.height * 0.01),
                   MyTextField(
                     controller: confirmPwdController,
                     hintText: "Confirm Password",
                     obscureText: true,
                   ),
-                  const SizedBox(height: 25),
+                  SizedBox(height: widget.height * 0.03),
                   CButton(
                     onTap: signUp,
                     text: "Sign Up",
                   ),
-                  const SizedBox(height: 50),
+                  SizedBox(height: widget.height * 0.06),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text("Already have an account?"),
-                      const SizedBox(width: 4),
+                      SizedBox(width: widget.height * 0.005),
                       GestureDetector(
                         onTap: () {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (context) => LoginScreen(
-                                  database: widget.database),
+                                  database: widget.database,
+                                  height: widget.height,
+                                  width: widget.width),
                             ),
                           );
                         },

@@ -9,12 +9,16 @@ import '../../pages/all_users_screen.dart'; // New screen
 
 class MainNavigation extends StatefulWidget {
   final DatabaseService database; // database Reference
-  final String userId; //Identifier
+  final String userId;
+  final double width;
+  final double height;
 
   const MainNavigation(
       {super.key,
       required this.database,
-      required this.userId}); // Add required parameter
+      required this.userId,
+      required this.width,
+      required this.height}); // Add required parameter
 
   @override
   _MainNavigationState createState() => _MainNavigationState();
@@ -40,12 +44,20 @@ class _MainNavigationState extends State<MainNavigation> {
             userId: widget.userId,
             socket: socket!,
             userData: userData,
-            refreshData: _loadUserData
+            refreshData: _loadUserData,
+            width: widget.width,
+            height: widget.height,
           );
         case 1:
-          return const Leaderboard();
+          return Leaderboard(
+            width: widget.width,
+            height: widget.height,
+          );
         case 2:
-          return const AllUsersScreen();
+          return AllUsersScreen(
+            width: widget.width,
+            height: widget.height,
+          );
         default:
           return const Center(child: Text('Page not found'));
       }

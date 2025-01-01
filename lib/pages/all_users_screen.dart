@@ -1,12 +1,12 @@
 // ignore_for_file: avoid_print
 
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:ecofy/services/general/socket.dart'; // Import your socket helper
 
 class AllUsersScreen extends StatefulWidget {
-  const AllUsersScreen({super.key});
+  final double height;
+  final double width;
+  const AllUsersScreen({super.key, required this.width, required this.height});
 
   @override
   State<AllUsersScreen> createState() => _AllUsersScreenState();
@@ -84,10 +84,10 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
                     itemBuilder: (context, index) {
                       final user = filteredUsers[index];
                       return ListTile(
-                        leading: const ClipOval(
+                        leading: ClipOval(
                           child: Icon(
                             Icons.person,
-                            size: 50,
+                            size: widget.width * 0.12,
                             color: Colors.grey,
                           ),
                         ),

@@ -12,6 +12,8 @@ class OwnProfileScreen extends StatefulWidget {
   final WebSocketChannel socket;
   final DatabaseService database;
   final Function refreshData;
+  final double width;
+  final double height;
 
   OwnProfileScreen(
       {super.key,
@@ -19,7 +21,9 @@ class OwnProfileScreen extends StatefulWidget {
       required this.userId,
       required this.socket,
       required this.database,
-      required this.refreshData});
+      required this.refreshData,
+      required this.width,
+      required this.height});
 
   @override
   State<OwnProfileScreen> createState() => _OwnProfileScreenState();
@@ -87,9 +91,11 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
                 const Divider(),
                 _buildTabBar(),
                 S3Url == null
-                    ? const Center(
+                    ? Center(
                         child: SizedBox(
-                            child: CircularProgressIndicator.adaptive()))
+                            height: widget.height * 0.5,
+                            child: Center(
+                                child: CircularProgressIndicator.adaptive())))
                     : _buildTabView(),
               ],
             ),
@@ -115,13 +121,13 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
               },
               child: CircleAvatar(
                 // Change to allow for network images to be displayed
-                radius: 64,
+                radius: widget.width * 0.15,
                 backgroundImage: widget.userData["profilePic"] == ""
                     ? NetworkImage(
                         "https://ecofy-app.s3.eu-central-1.amazonaws.com/istockphoto-1130884625-612x612.jpg")
                     : NetworkImage(widget.userData["profilePic"]),
               )),
-          const SizedBox(width: 20),
+          SizedBox(width: widget.width * 0.05),
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -221,7 +227,7 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: widget.width * 0.02),
           ElevatedButton(
             onPressed: () {
               // Navigate to the settings screen
@@ -261,7 +267,7 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
 
   Widget _buildTabView() {
     return SizedBox(
-      height: 400,
+      height: widget.height * 0.5,
       child: TabBarView(
         children: [
           _buildGridView(),
@@ -288,10 +294,10 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
         itemCount: countPhotos,
         itemBuilder: (context, index) {
           return Container(
-              color: const Color(0xFF37BE81),
-              alignment: Alignment.center,
-              child: Image.network('$S3Url/${widget.userId}/index.png'),
-              );
+            color: const Color(0xFF37BE81),
+            alignment: Alignment.center,
+            child: Image.network('$S3Url/${widget.userId}/index.png'),
+          );
         },
       ),
     );

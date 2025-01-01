@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Leaderboard extends StatelessWidget {
-  const Leaderboard({super.key});
+  final double height;
+  final double width;
+  const Leaderboard({super.key, required this.height, required this.width});
 
   // Dummy data for now
   final List<Map<String, dynamic>> players = const [
@@ -30,9 +32,9 @@ class Leaderboard extends StatelessWidget {
                 color: Colors.purple,
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: height * 0.02),
             _buildTopThree(),
-            const SizedBox(height: 20),
+            SizedBox(height: height * 0.02),
             _buildRestOfLeaderboard(),
           ],
         ),
@@ -69,7 +71,7 @@ class Leaderboard extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        const SizedBox(height: 5),
+        SizedBox(height: height * 0.005),
         Text(
           player['name'],
           style: TextStyle(
@@ -85,9 +87,9 @@ class Leaderboard extends StatelessWidget {
             color: Colors.purple,
           ),
         ),
-        const SizedBox(height: 5),
+        SizedBox(height: height * 0.005),
         CircleAvatar(
-          radius: 12,
+          radius: width * 0.02,
           backgroundColor: Colors.yellow,
           child: Text(rank.toString(),
               style: const TextStyle(color: Colors.black)),
