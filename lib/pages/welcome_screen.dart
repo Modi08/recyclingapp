@@ -89,7 +89,7 @@ class WelcomeScreen extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              minimumSize: Size(double.infinity, width * 0.06),
+                              minimumSize: Size(double.infinity, height * 0.06),
                             ),
                             child: const Text(
                               'Log In',
