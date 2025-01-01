@@ -235,10 +235,13 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => SettingsScreen(
-                        database: widget.database,
-                        refreshData: widget.refreshData,
-                        userId: widget.userId,
-                        socket: widget.socket)),
+                          database: widget.database,
+                          refreshData: widget.refreshData,
+                          userId: widget.userId,
+                          socket: widget.socket,
+                          width: widget.width,
+                          height: widget.height
+                        )),
               );
             },
             style: ElevatedButton.styleFrom(

@@ -10,12 +10,16 @@ class SettingsScreen extends StatefulWidget {
   final Function refreshData;
   final String userId;
   final WebSocketChannel socket;
+  final double width;
+  final double height;
   const SettingsScreen(
       {super.key,
       required this.database,
       required this.refreshData,
       required this.userId,
-      required this.socket});
+      required this.socket,
+      required this.width,
+      required this.height});
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -167,8 +171,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 32, color: Colors.green),
-            const SizedBox(width: 16),
+            Icon(icon, size: widget.width * 0.08, color: Colors.green),
+            SizedBox(width: widget.width * 0.04),
             Text(
               title,
               style: const TextStyle(
@@ -207,9 +211,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     "value": controller.text
                   }));
                   widget.database
-                      .updateValue(key, controller.text, widget.userId).then((data) {
-                        widget.refreshData();
-                      });
+                      .updateValue(key, controller.text, widget.userId)
+                      .then((data) {
+                    widget.refreshData();
+                  });
                 }
               },
               child: const Text('Save'),
