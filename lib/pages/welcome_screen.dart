@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({super.key});
+  final double width;
+  final double height;
+  const WelcomeScreen({super.key, required this.width, required this.height});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +52,7 @@ class WelcomeScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: height * 0.02),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Column(
@@ -65,7 +67,7 @@ class WelcomeScreen extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              minimumSize: const Size(double.infinity, 50),
+                              minimumSize: Size(double.infinity, height * 0.06),
                             ),
                             child: const Text(
                               'Sign Up',
@@ -75,7 +77,7 @@ class WelcomeScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          SizedBox(height: height * 0.01),
                           OutlinedButton(
                             onPressed: () {
                               Navigator.pushNamed(
@@ -87,7 +89,7 @@ class WelcomeScreen extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              minimumSize: const Size(double.infinity, 50),
+                              minimumSize: Size(double.infinity, width * 0.06),
                             ),
                             child: const Text(
                               'Log In',

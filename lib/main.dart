@@ -27,15 +27,17 @@ class _EcofyState extends State<Ecofy> {
 
   @override
   Widget build(BuildContext context) {
-
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    
     return MaterialApp(
       title: 'Recycling App',
       theme: ThemeData(primarySwatch: Colors.green),
       initialRoute: '/',
       routes: {
-        '/': (context) => const WelcomeScreen(),
-        '/signup': (context) => SignUpScreen(database: database),
-        '/login': (context) => LoginScreen(database: database),
+        '/': (context) => WelcomeScreen(width: width, height: height),
+        '/signup': (context) => SignUpScreen(database: database, width: width, height: height),
+        '/login': (context) => LoginScreen(database: database, width: width, height: height),
       },
     );
   }

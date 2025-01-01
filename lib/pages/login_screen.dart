@@ -10,11 +10,17 @@ import 'package:ecofy/components/mytextfield.dart';
 import 'package:ecofy/services/general/colors.dart';
 import 'package:ecofy/services/general/snackBar.dart';
 import 'package:ecofy/pages/signup_screen.dart';
-import 'package:ecofy/services/general/main_navigation.dart'; // Import MainNavigation
+import 'package:ecofy/services/general/main_navigation.dart';
 
 class LoginScreen extends StatefulWidget {
   final DatabaseService database;
-  const LoginScreen({super.key, required this.database});
+  final double width;
+  final double height;
+  const LoginScreen(
+      {super.key,
+      required this.database,
+      required this.height,
+      required this.width});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -56,8 +62,12 @@ class _LoginScreenState extends State<LoginScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      MainNavigation(database: widget.database, userId: responseData["user"]["userId"],)),
+                  builder: (context) => MainNavigation(
+                        database: widget.database,
+                        userId: responseData["user"]["userId"],
+                        width: widget.width,
+                        height: widget.height,
+                      )),
             );
           });
         }
@@ -89,39 +99,42 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 50),
+                  SizedBox(height: widget.height * 0.06),
                   Icon(
                     Icons.recycling_sharp,
-                    size: 80,
+                    size: widget.height * 0.09,
                     color: logoColor,
                   ),
-                  const SizedBox(height: 50),
+                  SizedBox(height: widget.height * 0.06),
                   const Text(
                     "Welcome back. You've been missed!",
                     style: TextStyle(fontSize: 16),
                   ),
-                  const SizedBox(height: 25),
+                  SizedBox(height: widget.height * 0.03),
                   MyTextField(controller: emailController, hintText: "Email"),
-                  const SizedBox(height: 10),
+                  SizedBox(height: widget.height * 0.01),
                   MyTextField(
                     controller: pwdController,
                     hintText: "Password",
                     obscureText: true,
                   ),
-                  const SizedBox(height: 25),
+                  SizedBox(height: widget.height * 0.03),
                   CButton(onTap: login, text: "Login"),
-                  const SizedBox(height: 50),
+                  SizedBox(height: widget.height * 0.06),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text("Don't have an account?"),
-                      const SizedBox(width: 4),
+                      SizedBox(width: widget.height * 0.005),
                       GestureDetector(
                         onTap: () {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SignUpScreen(database: widget.database),
+                              builder: (context) => SignUpScreen(
+                                  database: widget.database,
+                                  height: widget.height,
+                                  width: widget.width),
                             ),
                           );
                         },
