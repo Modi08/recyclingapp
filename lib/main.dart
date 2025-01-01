@@ -1,7 +1,6 @@
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'pages/leaderboard.dart';
 import 'package:ecofy/pages/welcome_screen.dart'; // Replace your_app_name with the actual app name
 import 'pages/signup_screen.dart'; // Import SignUpScreen
 import 'pages/login_screen.dart'; // Import LoginScreen
@@ -29,15 +28,17 @@ class _EcofyState extends State<Ecofy> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    
+
     return MaterialApp(
       title: 'Recycling App',
       theme: ThemeData(primarySwatch: Colors.green),
       initialRoute: '/',
       routes: {
         '/': (context) => WelcomeScreen(width: width, height: height),
-        '/signup': (context) => SignUpScreen(database: database, width: width, height: height),
-        '/login': (context) => LoginScreen(database: database, width: width, height: height),
+        '/signup': (context) =>
+            SignUpScreen(database: database, width: width, height: height),
+        '/login': (context) =>
+            LoginScreen(database: database, width: width, height: height),
       },
     );
   }
