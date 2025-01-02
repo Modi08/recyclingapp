@@ -13,18 +13,17 @@ class User {
   final List<String> countUploadedPhotos;
   final String profilePic;
 
-  User({
-    required this.id,
-    required this.email,
-    required this.pwd,
-    required this.username,
-    required this.connectionId,
-    required this.bio,
-    required this.followers,
-    required this.following,
-    required this.countUploadedPhotos,
-    required this.profilePic
-  });
+  User(
+      {required this.id,
+      required this.email,
+      required this.pwd,
+      required this.username,
+      required this.connectionId,
+      required this.bio,
+      required this.followers,
+      required this.following,
+      required this.countUploadedPhotos,
+      required this.profilePic});
 
   Map<String, dynamic> toMap() {
     return {
@@ -43,17 +42,16 @@ class User {
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
-      id: map["id"],
-      email: map["email"],
-      pwd: map["pwd"],
-      username: map["username"],
-      connectionId: map["connectionId"],
-      bio: map["bio"],
-      followers: map["followers"],
-      following: map["following"],
-      countUploadedPhotos: map["countUploadedPhotos"],
-      profilePic: map["profilePic"]
-    );
+        id: map["id"],
+        email: map["email"],
+        pwd: map["pwd"],
+        username: map["username"],
+        connectionId: map["connectionId"],
+        bio: map["bio"],
+        followers: map["followers"],
+        following: map["following"],
+        countUploadedPhotos: map["countUploadedPhotos"],
+        profilePic: map["profilePic"]);
   }
 }
 
@@ -89,9 +87,9 @@ class DatabaseService {
     final path = join(databasesPath, databaseName);
     //databaseFactory.deleteDatabase(path);  //Need to be uncommented if scheme is changes
 
-    return await openDatabase(path,
-        version: databaseVersion, onCreate: (db, version) async {
-          await db.execute('''
+    return await openDatabase(path, version: databaseVersion,
+        onCreate: (db, version) async {
+      await db.execute('''
           CREATE TABLE $tableName (
             $columnUserId TEXT PRIMARY KEY,
             $columnEmail TEXT,
@@ -105,7 +103,7 @@ class DatabaseService {
             $columnProfilePic TEXT
           )
           ''');
-        });
+    });
   }
 
   // Insert a row in the database
@@ -117,8 +115,8 @@ class DatabaseService {
   // Get a single row by ID
   Future<Map<String, dynamic>?> queryById(String id) async {
     Database db = await database;
-    List<Map<String, dynamic>> results = await db.query(tableName,
-        where: '$columnUserId = ?', whereArgs: [id]);
+    List<Map<String, dynamic>> results =
+        await db.query(tableName, where: '$columnUserId = ?', whereArgs: [id]);
     if (results.isNotEmpty) {
       return results.first;
     }
@@ -135,15 +133,15 @@ class DatabaseService {
   Future<int> update(Map<String, dynamic> row) async {
     Database db = await database;
     String id = row[columnUserId];
-    return await db.update(tableName, row,
-        where: '$columnUserId = ?', whereArgs: [id]);
+    return await db
+        .update(tableName, row, where: '$columnUserId = ?', whereArgs: [id]);
   }
 
   // Delete a row from the database
   Future<int> delete(int id) async {
     Database db = await database;
-    return await db.delete(tableName,
-        where: '$columnUserId = ?', whereArgs: [id]);
+    return await db
+        .delete(tableName, where: '$columnUserId = ?', whereArgs: [id]);
   }
 
   Future<int> replace(Map<String, dynamic> row) async {

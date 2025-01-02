@@ -1,6 +1,5 @@
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ecofy/pages/welcome_screen.dart'; // Replace your_app_name with the actual app name
 import 'pages/signup_screen.dart'; // Import SignUpScreen
 import 'pages/login_screen.dart'; // Import LoginScreen

@@ -71,7 +71,7 @@ class _MainNavigationState extends State<MainNavigation> {
     widget.database.queryById(widget.userId).then((data) {
       //No needed for If statement as the page will only switch once data is saved
       setState(() {
-        //print('$data, ${widget.userId}');
+        print('$data, ${widget.userId}');
         userData = {...data!};
       });
     });
