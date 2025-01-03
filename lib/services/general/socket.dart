@@ -35,20 +35,23 @@ void listendMsg(WebSocketChannel socket, DatabaseService database) {
   );
 }
 
-void processMsg(
-    int statusCode, Map<String, dynamic> data, WebSocketChannel socket, DatabaseService database) {
+void processMsg(int statusCode, Map<String, dynamic> data,
+    WebSocketChannel socket, DatabaseService database) {
   print("Processing: $statusCode");
   switch (statusCode) {
-    case 100:// No Return Value
+    case 100: // No Return Value
       break;
-    case 200:// No Relevent Return Value
+    case 200: // No Relevent Return Value
       print("Success: ${data["msg"]}");
       break;
     case 201:
-      List<Map<String, dynamic>> allUsers = jsonDecode(data["allUsers"]).whereType<Map<String, dynamic>>().toList();
+      List<Map<String, dynamic>> allUsers = jsonDecode(data["allUsers"])
+          .whereType<Map<String, dynamic>>()
+          .toList();
       for (int index = 0; index < allUsers.length; index++) {
         database.replace(allUsers[index]);
       }
+      print("All users replaced in the database: $allUsers");
       break;
     default:
       print("Unhandled statusCode: $statusCode with data: $data");

@@ -32,8 +32,16 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
 
   void loadUserData() {
     widget.database.queryAllExcept(widget.userId).then((userList) {
+      print("User data loaded: $userList");
       setState(() {
         allUsers = userList;
+        filteredUsers = List.from(userList);
+        isLoading = false;
+      });
+    }).catchError((error) {
+      print("Error loading user data: $error");
+      setState(() {
+        isLoading = false;
       });
     });
   }
@@ -50,6 +58,7 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
             .toList();
       }
     });
+    print("Filtered users: $filteredUsers");
   }
 
   @override
@@ -93,7 +102,7 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
                 // User List
                 Expanded(
                   child: ListView.builder(
-                    itemCount: allUsers.length,
+                    itemCount: filteredUsers.length,
                     itemBuilder: (context, index) {
                       final user = filteredUsers[index];
                       return ListTile(
