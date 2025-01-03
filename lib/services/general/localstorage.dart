@@ -13,17 +13,18 @@ class User {
   final List<String> countUploadedPhotos;
   final String profilePic;
 
-  User(
-      {required this.id,
-      required this.email,
-      required this.pwd,
-      required this.username,
-      required this.connectionId,
-      required this.bio,
-      required this.followers,
-      required this.following,
-      required this.countUploadedPhotos,
-      required this.profilePic});
+  User({
+    required this.id,
+    required this.email,
+    required this.pwd,
+    required this.username,
+    required this.connectionId,
+    required this.bio,
+    required this.followers,
+    required this.following,
+    required this.countUploadedPhotos,
+    required this.profilePic,
+  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -36,22 +37,23 @@ class User {
       "followers": followers,
       "following": following,
       "countUploadedPhotos": countUploadedPhotos,
-      "profilePic": profilePic
+      "profilePic": profilePic,
     };
   }
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
-        id: map["id"],
-        email: map["email"],
-        pwd: map["pwd"],
-        username: map["username"],
-        connectionId: map["connectionId"],
-        bio: map["bio"],
-        followers: map["followers"],
-        following: map["following"],
-        countUploadedPhotos: map["countUploadedPhotos"],
-        profilePic: map["profilePic"]);
+      id: map["id"],
+      email: map["email"],
+      pwd: map["pwd"],
+      username: map["username"],
+      connectionId: map["connectionId"],
+      bio: map["bio"],
+      followers: map["followers"],
+      following: map["following"],
+      countUploadedPhotos: map["countUploadedPhotos"],
+      profilePic: map["profilePic"],
+    );
   }
 }
 
@@ -85,11 +87,12 @@ class DatabaseService {
   Future<Database> initDatabase() async {
     final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, databaseName);
-    //databaseFactory.deleteDatabase(path);  //Need to be uncommented if scheme is changes
 
-    return await openDatabase(path, version: databaseVersion,
-        onCreate: (db, version) async {
-      await db.execute('''
+    return await openDatabase(
+      path,
+      version: databaseVersion,
+      onCreate: (db, version) async {
+        await db.execute('''
           CREATE TABLE $tableName (
             $columnUserId TEXT PRIMARY KEY,
             $columnEmail TEXT,
@@ -102,8 +105,9 @@ class DatabaseService {
             $columnConnectionId TEXT,
             $columnProfilePic TEXT
           )
-          ''');
-    });
+        ''');
+      },
+    );
   }
 
   // Insert a row in the database
@@ -144,6 +148,18 @@ class DatabaseService {
         .delete(tableName, where: '$columnUserId = ?', whereArgs: [id]);
   }
 
+  // Clear all rows in the database
+  Future<int> clearAll() async {
+    Database db = await database;
+    try {
+      return await db
+          .delete(tableName); // Deletes all rows from the 'users' table
+    } catch (e) {
+      print("Error clearing all rows: $e");
+      return 0; // Return 0 to indicate no rows were deleted
+    }
+  }
+
   Future<int> replace(Map<String, dynamic> row) async {
     return await delete(row[columnUserId]).then((itemFound) async {
       return await insert(row);
@@ -151,16 +167,24 @@ class DatabaseService {
   }
 
   Future<int> updateValue(String key, dynamic value, String userId) async {
-    return await queryById(userId).then((data) {
-      Map<String, dynamic> user = {...data!};
-      user[key] = value;
-      return update(user);
-    });
+    final data = await queryById(userId);
+    if (data == null) {
+      print("Error: User with ID $userId not found in the database.");
+      throw Exception("User not found");
+    }
+
+    Map<String, dynamic> user = {...data};
+    user[key] = value;
+    return update(user);
   }
 
   Future<List<Map<String, dynamic>>> queryAllExcept(String userId) async {
     Database db = await database;
-    List<Map<String, dynamic>> results = await db.query(tableName, where: '$columnUserId != ?', whereArgs: [userId]);
+    List<Map<String, dynamic>> results = await db.query(
+      tableName,
+      where: '$columnUserId != ?',
+      whereArgs: [userId],
+    );
     if (results.isEmpty) {
       return [];
     } else {

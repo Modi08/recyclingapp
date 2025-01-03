@@ -48,6 +48,10 @@ void processMsg(int statusCode, Map<String, dynamic> data,
       List<Map<String, dynamic>> allUsers = jsonDecode(data["allUsers"])
           .whereType<Map<String, dynamic>>()
           .toList();
+
+      // Clear outdated data
+      database.clearAll(); // Add a method in DatabaseService to clear all data
+
       for (int index = 0; index < allUsers.length; index++) {
         database.replace(allUsers[index]);
       }
