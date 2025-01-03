@@ -138,19 +138,15 @@ class DatabaseService {
   }
 
   // Delete a row from the database
-  Future<int> delete(int id) async {
+  Future<int> delete(String id) async {
     Database db = await database;
     return await db
         .delete(tableName, where: '$columnUserId = ?', whereArgs: [id]);
   }
 
   Future<int> replace(Map<String, dynamic> row) async {
-    return await queryById(row[columnUserId]).then((itemFound) async {
-      if (itemFound == null) {
-        return await insert(row);
-      } else {
-        return await update(row);
-      }
+    return await delete(row[columnUserId]).then((itemFound) async {
+      return await insert(row);
     });
   }
 
@@ -160,5 +156,15 @@ class DatabaseService {
       user[key] = value;
       return update(user);
     });
+  }
+
+  Future<List<Map<String, dynamic>>> queryAllExcept(String userId) async {
+    Database db = await database;
+    List<Map<String, dynamic>> results = await db.query(tableName, where: '$columnUserId != ?', whereArgs: [userId]);
+    if (results.isEmpty) {
+      return [];
+    } else {
+      return results;
+    }
   }
 }
