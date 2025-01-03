@@ -214,9 +214,9 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
                         isProfilePic: false,
                         count: widget.userData["countUploadedPhotos"] + 1)
                     .then((data) {
-                  print("Count: $data");
+                  //print("Count: $data");
                   widget.refreshData();
-                  print("UserData ${widget.userData}");
+                  //print("UserData ${widget.userData}");
                 });
               },
               style: ElevatedButton.styleFrom(
@@ -285,8 +285,7 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
 
   Widget _buildGridView() {
     final int countPhotos = widget.userData['countUploadedPhotos']!;
-    Image? img;
-    print('countPhotos $countPhotos');
+    //print('countPhotos $countPhotos');
 
     return AspectRatio(
       aspectRatio: 1,
@@ -300,10 +299,10 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
         ),
         itemCount: countPhotos,
         itemBuilder: (context, index) {
-          print('index $index');
-          print('$S3Url${widget.userId}/${index + 1}.png');
+          //print('index $index');
+          //print('$S3Url${widget.userId}/${index + 1}.png');
 
-          //Find a way to check if the image is real!!!q
+          //Find a way to check if the image is real!!!
           return Container(
             color: const Color(0xFF37BE81),
             alignment: Alignment.center,

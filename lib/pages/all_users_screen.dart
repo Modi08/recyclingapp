@@ -1,12 +1,25 @@
 // ignore_for_file: avoid_print
 
+import 'dart:convert';
+
+import 'package:ecofy/components/circularLoader.dart';
+import 'package:ecofy/services/general/localstorage.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class AllUsersScreen extends StatefulWidget {
   final double height;
   final double width;
-  const AllUsersScreen({super.key, required this.width, required this.height});
+  final WebSocketChannel socket;
+  final String userId;
+  final DatabaseService database;
+  const AllUsersScreen(
+      {super.key,
+      required this.width,
+      required this.height,
+      required this.socket,
+      required this.userId,
+      required this.database});
 
   @override
   State<AllUsersScreen> createState() => _AllUsersScreenState();
@@ -16,13 +29,12 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
   List<Map<String, dynamic>> allUsers = [];
   List<Map<String, dynamic>> filteredUsers = [];
   bool isLoading = true;
-  late WebSocketChannel socket;
 
-  void _refreshUsers(List<Map<String, dynamic>> users) {
-    setState(() {
-      allUsers = users;
-      filteredUsers = List.from(allUsers);
-      isLoading = false;
+  void loadUserData() {
+    widget.database.queryAllExcept(widget.userId).then((userList) {
+      setState(() {
+        allUsers = userList;
+      });
     });
   }
 
@@ -41,10 +53,11 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
   }
 
   @override
-  void dispose() {
-    // Close the WebSocket connection when the widget is disposed
-    socket.sink.close();
-    super.dispose();
+  void initState() {
+    super.initState();
+    widget.socket.sink
+        .add(jsonEncode({"action": "getAllUsers", "userId": widget.userId}));
+    loadUserData();
   }
 
   @override
@@ -57,8 +70,8 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
         centerTitle: true,
         automaticallyImplyLeading: false, // Remove the back button
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+      body: filteredUsers.isEmpty
+          ? const Circularloader()
           : Column(
               children: [
                 // Search Bar
@@ -80,7 +93,7 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
                 // User List
                 Expanded(
                   child: ListView.builder(
-                    itemCount: filteredUsers.length,
+                    itemCount: allUsers.length,
                     itemBuilder: (context, index) {
                       final user = filteredUsers[index];
                       return ListTile(

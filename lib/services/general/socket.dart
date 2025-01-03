@@ -13,7 +13,7 @@ void listendMsg(WebSocketChannel socket, DatabaseService database) {
     (data) {
       try {
         final parsedData = jsonDecode(data);
-        print("Message received: $parsedData");
+        //print("Message received: $parsedData");
 
         if (parsedData.containsKey("data")) {
           final res = parsedData["data"];
@@ -37,7 +37,7 @@ void listendMsg(WebSocketChannel socket, DatabaseService database) {
 
 void processMsg(
     int statusCode, Map<String, dynamic> data, WebSocketChannel socket, DatabaseService database) {
-  print("Processing WebSocket message with statusCode: $statusCode");
+  print("Processing: $statusCode");
   switch (statusCode) {
     case 100:// No Return Value
       break;
@@ -45,7 +45,10 @@ void processMsg(
       print("Success: ${data["msg"]}");
       break;
     case 201:
-      
+      List<Map<String, dynamic>> allUsers = jsonDecode(data["allUsers"]).whereType<Map<String, dynamic>>().toList();
+      for (int index = 0; index < allUsers.length; index++) {
+        database.replace(allUsers[index]);
+      }
       break;
     default:
       print("Unhandled statusCode: $statusCode with data: $data");

@@ -1,3 +1,4 @@
+import 'package:ecofy/components/circularLoader.dart';
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:ecofy/services/general/socket.dart';
 import 'package:flutter/material.dart';
@@ -54,10 +55,13 @@ class _MainNavigationState extends State<MainNavigation> {
             height: widget.height,
           );
         case 2:
-          return AllUsersScreen(
+          return socket != null ? AllUsersScreen(
             width: widget.width,
             height: widget.height,
-          );
+            socket: socket!,
+            userId: widget.userId,
+            database: widget.database
+          ) : const Circularloader();
         default:
           return const Center(child: Text('Page not found'));
       }
@@ -75,6 +79,12 @@ class _MainNavigationState extends State<MainNavigation> {
         userData = {...data!};
       });
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    socket!.sink.close();
   }
 
   @override
