@@ -103,27 +103,29 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          OutlinedButton(
-              style: ButtonStyle(
-                  shape:
-                      WidgetStatePropertyAll<OutlinedBorder>(CircleBorder())),
-              onPressed: () {
-                selectImage(widget.userId, widget.database, widget.socket);
-                widget.refreshData();
-              },
-              child: CircleAvatar(
-                // Change to allow for network images to be displayed
-                radius: widget.width * 0.15,
-                backgroundImage: widget.userData["profilePic"] == ""
-                    ? NetworkImage(
-                        "https://ecofy-app.s3.eu-central-1.amazonaws.com/istockphoto-1130884625-612x612.jpg")
-                    : NetworkImage(widget.userData["profilePic"]),
-              )),
-          SizedBox(width: widget.width * 0.05),
+          GestureDetector(
+            onTap: () {
+              selectImage(widget.userId, widget.database, widget.socket);
+              widget.refreshData();
+            },
+            child: Column(
+              children: [
+                CircleAvatar(
+                  radius: widget.width * 0.12, // Adjusted size
+                  backgroundImage: widget.userData["profilePic"] == ""
+                      ? NetworkImage(
+                          "https://ecofy-app.s3.eu-central-1.amazonaws.com/istockphoto-1130884625-612x612.jpg")
+                      : NetworkImage(widget.userData["profilePic"]),
+                ),
+                const SizedBox(height: 8), // Add slight spacing below avatar
+              ],
+            ),
+          ),
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -136,7 +138,7 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
                     "Following", (widget.userData['following']).toString()),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -165,7 +167,7 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
 
   Widget _buildUserInfo() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 3.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
