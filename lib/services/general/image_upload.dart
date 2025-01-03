@@ -21,6 +21,7 @@ Future<String?> selectImage(
     {bool isProfilePic = true, int count = 0}) async {
   await dotenv.load(fileName: '.env');
   Uint8List? img = await pickImage(ImageSource.gallery);
+
   if (img != null) {
     AwsS3.uploadUint8List(
       accessKey: dotenv.env["accessKey"]!,
@@ -35,16 +36,22 @@ Future<String?> selectImage(
     var picURL = isProfilePic
         ? "https://ecofy-app.s3.eu-central-1.amazonaws.com/profilePics/$userId.png"
         : "https://ecofy-app.s3.eu-central-1.amazonaws.com/$userId/$count.png";
-    
-    database.updateValue(isProfilePic ? "profilePic" : "countUploadedPhotos", picURL, userId);
+
+    await database.updateValue(isProfilePic ? "profilePic" : "countUploadedPhotos",
+        isProfilePic ? picURL : count, userId);
 
     socket.sink.add(jsonEncode({
       "action": "updateUserData",
       "userId": userId,
       "key": isProfilePic ? "profilePic" : "countUploadedPhotos",
-      "value": isProfilePic ? picURL : count++
+      "value": isProfilePic ? picURL : count
     }));
-    return picURL;
+
+    if (isProfilePic) {
+      return picURL;
+    } else {
+      return count.toString();
+    }
   }
   return null;
 }

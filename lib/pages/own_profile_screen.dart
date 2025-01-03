@@ -2,7 +2,6 @@ import 'package:ecofy/services/general/image_upload.dart';
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:flutter/material.dart';
 import 'package:ecofy/pages/settings_screen.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 // ignore: must_be_immutable
@@ -39,9 +38,7 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
   void initState() {
     super.initState();
     setState(() {
-      dotenv.load().then((data) {
-        S3Url = dotenv.env["S3BucketURL"];
-      });
+      S3Url = "https://ecofy-app.s3.eu-central-1.amazonaws.com/";
       //_addDefaultPhotos();
       isLoading = false;
     });
@@ -75,7 +72,6 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
         body: Center(child: CircularProgressIndicator()),
       );
     }
-
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -213,8 +209,13 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
                           )),
                 );*/
                 selectImage(widget.userId, widget.database, widget.socket,
-                    isProfilePic: false,
-                    count: widget.userData["countUploadedPhotos"]);
+                        isProfilePic: false,
+                        count: widget.userData["countUploadedPhotos"] + 1)
+                    .then((data) {
+                  print("Count: $data");
+                  widget.refreshData();
+                  print("UserData ${widget.userData}");
+                });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF37BE81),
@@ -235,13 +236,12 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => SettingsScreen(
-                          database: widget.database,
-                          refreshData: widget.refreshData,
-                          userId: widget.userId,
-                          socket: widget.socket,
-                          width: widget.width,
-                          height: widget.height
-                        )),
+                        database: widget.database,
+                        refreshData: widget.refreshData,
+                        userId: widget.userId,
+                        socket: widget.socket,
+                        width: widget.width,
+                        height: widget.height)),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -282,7 +282,9 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
   }
 
   Widget _buildGridView() {
-    final countPhotos = widget.userData['countUploadedPhotos']!;
+    final int countPhotos = widget.userData['countUploadedPhotos']!;
+    Image? img;
+    print('countPhotos $countPhotos');
 
     return AspectRatio(
       aspectRatio: 1,
@@ -296,10 +298,14 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
         ),
         itemCount: countPhotos,
         itemBuilder: (context, index) {
+          print('index $index');
+          print('$S3Url${widget.userId}/${index + 1}.png');
+
+          //Find a way to check if the image is real!!!q
           return Container(
             color: const Color(0xFF37BE81),
             alignment: Alignment.center,
-            child: Image.network('$S3Url/${widget.userId}/index.png'),
+            child: Image.network('$S3Url${widget.userId}/${index + 1}.png'),
           );
         },
       ),
