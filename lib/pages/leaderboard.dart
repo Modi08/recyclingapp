@@ -1,60 +1,103 @@
 import 'package:flutter/material.dart';
+import 'package:ecofy/services/general/localstorage.dart';
 
-class Leaderboard extends StatelessWidget {
+class Leaderboard extends StatefulWidget {
   final double height;
   final double width;
-  const Leaderboard({super.key, required this.height, required this.width});
+  final DatabaseService database; // Add database service reference
 
-  // Dummy data for now
-  final List<Map<String, dynamic>> players = const [
-    {"name": "Player 1", "score": 5700},
-    {"name": "Player 2", "score": 4500},
-    {"name": "Player 3", "score": 3200},
-    {"name": "Player 4", "score": 2900},
-    {"name": "Player 5", "score": 2600},
-    {"name": "Player 6", "score": 2400},
-    {"name": "Player 7", "score": 2200},
-    {"name": "Player 8", "score": 1800},
-  ];
+  const Leaderboard({
+    super.key,
+    required this.height,
+    required this.width,
+    required this.database,
+  });
+
+  @override
+  State<Leaderboard> createState() => _LeaderboardState();
+}
+
+class _LeaderboardState extends State<Leaderboard> {
+  List<Map<String, dynamic>> topPlayers = [];
+  bool isLoading = true;
+
+  // Fetch top players based on uploaded photos (points)
+  void loadLeaderboardData() async {
+    try {
+      final allUsers = await widget.database.queryAll();
+      // Create a mutable copy of the list
+      final mutableUsers = List<Map<String, dynamic>>.from(allUsers);
+      // Sort users by the number of uploaded photos (points) in descending order
+      mutableUsers.sort((a, b) => (b['countUploadedPhotos'] ?? 0)
+          .compareTo(a['countUploadedPhotos'] ?? 0));
+      // Take the top 10 users
+      setState(() {
+        topPlayers = mutableUsers.take(10).toList();
+        isLoading = false;
+      });
+    } catch (error) {
+      print("Error loading leaderboard data: $error");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadLeaderboardData();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return OverflowBox(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const Text(
-              'LEADERBOARD',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.purple,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF37BE81),
+        title: const Text("Leaderboard", style: TextStyle(color: Colors.white)),
+        centerTitle: true,
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                // Add this
+                child: Column(
+                  children: [
+                    const Text(
+                      'LEADERBOARD',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.purple,
+                      ),
+                    ),
+                    SizedBox(height: widget.height * 0.02),
+                    topPlayers.length >= 3 ? _buildTopThree() : Container(),
+                    SizedBox(height: widget.height * 0.02),
+                    _buildRestOfLeaderboard(),
+                  ],
+                ),
               ),
             ),
-            SizedBox(height: height * 0.02),
-            _buildTopThree(),
-            SizedBox(height: height * 0.02),
-            _buildRestOfLeaderboard(),
-          ],
-        ),
-      ),
     );
   }
 
-  // Building the top 3 players
+  // Build the top 3 players
   Widget _buildTopThree() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildTopPlayer(players[1], 2),
-        _buildTopPlayer(players[0], 1, isFirst: true),
-        _buildTopPlayer(players[2], 3),
+        if (topPlayers.length > 1) _buildTopPlayer(topPlayers[1], 2),
+        if (topPlayers.isNotEmpty)
+          _buildTopPlayer(topPlayers[0], 1, isFirst: true),
+        if (topPlayers.length > 2) _buildTopPlayer(topPlayers[2], 3),
       ],
     );
   }
 
-  // Building the top 3 player card
+  // Build a top player card
   Widget _buildTopPlayer(Map<String, dynamic> player, int rank,
       {bool isFirst = false}) {
     return Column(
@@ -71,37 +114,41 @@ class Leaderboard extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        SizedBox(height: height * 0.005),
+        SizedBox(height: widget.height * 0.005),
         Text(
-          player['name'],
+          player['username'] ?? 'Unknown',
           style: TextStyle(
             fontSize: isFirst ? 18 : 14,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
-          player['score'].toString(),
+          (player['countUploadedPhotos'] ?? 0).toString(), // Display points
           style: TextStyle(
             fontSize: isFirst ? 24 : 18,
             fontWeight: FontWeight.bold,
             color: Colors.purple,
           ),
         ),
-        SizedBox(height: height * 0.005),
+        SizedBox(height: widget.height * 0.005),
         CircleAvatar(
-          radius: width * 0.02,
+          radius: widget.width * 0.02,
           backgroundColor: Colors.yellow,
           child: Text(rank.toString(),
               style: const TextStyle(color: Colors.black)),
-        )
+        ),
       ],
     );
   }
 
-  // Building the rest of the leaderboard
+  // Build the rest of the leaderboard
   Widget _buildRestOfLeaderboard() {
+    if (topPlayers.length <= 3) {
+      return const SizedBox(); // Return an empty widget if there are no additional players
+    }
+
     return Column(
-      children: players.sublist(3).asMap().entries.map((entry) {
+      children: topPlayers.sublist(3).asMap().entries.map((entry) {
         int index = entry.key;
         Map<String, dynamic> player = entry.value;
         return Card(
@@ -112,7 +159,7 @@ class Leaderboard extends StatelessWidget {
               child: Text((index + 4).toString(),
                   style: const TextStyle(color: Colors.black)),
             ),
-            title: Text(player['name']),
+            title: Text(player['username'] ?? 'Unknown'),
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
@@ -120,7 +167,8 @@ class Leaderboard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                player['score'].toString(),
+                (player['countUploadedPhotos'] ?? 0)
+                    .toString(), // Display points
                 style: const TextStyle(
                     color: Colors.white, fontWeight: FontWeight.bold),
               ),

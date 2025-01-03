@@ -53,15 +53,18 @@ class _MainNavigationState extends State<MainNavigation> {
           return Leaderboard(
             width: widget.width,
             height: widget.height,
+            database: widget.database, // Pass the database reference here
           );
         case 2:
-          return socket != null ? AllUsersScreen(
-            width: widget.width,
-            height: widget.height,
-            socket: socket!,
-            userId: widget.userId,
-            database: widget.database
-          ) : const Circularloader();
+          return socket != null
+              ? AllUsersScreen(
+                  width: widget.width,
+                  height: widget.height,
+                  socket: socket!,
+                  userId: widget.userId,
+                  database: widget.database,
+                )
+              : const Circularloader();
         default:
           return const Center(child: Text('Page not found'));
       }
