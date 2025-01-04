@@ -52,8 +52,8 @@ class _LeaderboardState extends State<Leaderboard> {
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                _buildHeader(),
-                Expanded(child: _buildLeaderboardList()),
+                _buildHeader(), // Podium section
+                Expanded(child: _buildLeaderboardList()), // Leaderboard list
               ],
             ),
     );
@@ -61,17 +61,17 @@ class _LeaderboardState extends State<Leaderboard> {
 
   Widget _buildHeader() {
     return Container(
-      height: widget.height * 0.4,
+      height: widget.height * 0.41,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFFFFA726), Color(0xFFFF7043)],
+          colors: [Color(0xFF37BE81), Color.fromARGB(255, 13, 66, 42)],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
       ),
       child: Column(
         children: [
-          const SizedBox(height: 40),
+          const SizedBox(height: 50),
           const Text(
             'Leaderboard',
             style: TextStyle(
@@ -80,17 +80,18 @@ class _LeaderboardState extends State<Leaderboard> {
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               if (topPlayers.length > 1)
-                _buildPodiumPlayer(topPlayers[1], 2, Colors.grey, 120),
+                _buildPodiumPlayer(topPlayers[1], "2nd", Colors.grey, 80),
               if (topPlayers.isNotEmpty)
-                _buildPodiumPlayer(topPlayers[0], 1, Colors.amber, 160),
+                _buildPodiumPlayer(topPlayers[0], "1st", Colors.amber, 120),
               if (topPlayers.length > 2)
-                _buildPodiumPlayer(topPlayers[2], 3, Colors.brown, 100),
+                _buildPodiumPlayer(topPlayers[2], "3rd",
+                    const Color.fromARGB(255, 138, 85, 16), 60),
             ],
           ),
         ],
@@ -99,58 +100,59 @@ class _LeaderboardState extends State<Leaderboard> {
   }
 
   Widget _buildPodiumPlayer(
-      Map<String, dynamic> player, int rank, Color color, double columnHeight) {
+      Map<String, dynamic> player, String rank, Color color, double height) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            Container(
-              height: columnHeight,
-              width: 60,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-            ),
-            Positioned(
-              top: -30,
-              child: CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.white,
-                backgroundImage:
-                    player['profilePic'] != null && player['profilePic'] != ''
-                        ? NetworkImage(player['profilePic'])
-                        : null,
-                child:
-                    player['profilePic'] == null || player['profilePic'] == ''
-                        ? const Icon(Icons.person, size: 30, color: Colors.grey)
-                        : null,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
+        // Rank text
         Text(
-          player['username'] ?? 'Unknown',
+          rank,
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
+        const SizedBox(height: 10),
+        // Profile picture
+        CircleAvatar(
+          radius: 30,
+          backgroundColor: Colors.white,
+          backgroundImage:
+              player['profilePic'] != null && player['profilePic'] != ''
+                  ? NetworkImage(player['profilePic'])
+                  : null,
+          child: player['profilePic'] == null || player['profilePic'] == ''
+              ? const Icon(Icons.person, size: 30, color: Colors.grey)
+              : null,
+        ),
+        const SizedBox(height: 8),
+        // Podium block
+        Container(
+          height: height,
+          width: 60,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+        const SizedBox(height: 10),
+        // Player name
+        Text(
+          player['username'] ?? 'Unknown',
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        // Points
         Text(
           '${player['countUploadedPhotos'] ?? 0} pts',
-          style: const TextStyle(fontSize: 14, color: Colors.white70),
-        ),
-        Text(
-          rank == 1
-              ? '1st'
-              : rank == 2
-                  ? '2nd'
-                  : '3rd',
-          style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.8)),
+          style: const TextStyle(
+            fontSize: 13,
+            color: Colors.white70,
+          ),
         ),
       ],
     );
@@ -161,38 +163,102 @@ class _LeaderboardState extends State<Leaderboard> {
       itemCount: topPlayers.length - 3,
       itemBuilder: (context, index) {
         final player = topPlayers[index + 3];
+        final rank = index + 4; // Rank starts from 4 for users below the podium
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundImage:
-                    player['profilePic'] != null && player['profilePic'] != ''
-                        ? NetworkImage(player['profilePic'])
-                        : null,
-                child:
-                    player['profilePic'] == null || player['profilePic'] == ''
-                        ? const Icon(Icons.person, color: Colors.white)
-                        : null,
-              ),
-              title: Text(
-                player['username'] ?? 'Unknown',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              trailing: Text(
-                '${player['countUploadedPhotos'] ?? 0} pts',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepOrange,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Rank number
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: Text(
+                  '$rank${_getOrdinalSuffix(rank)}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
+                    fontSize: 18,
+                  ),
                 ),
               ),
-            ),
+              // User card with profile and details
+              Expanded(
+                child: Stack(
+                  children: [
+                    // Faded green background
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xFF37BE81).withOpacity(1),
+                              Colors.transparent
+                            ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    // User content
+                    Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ListTile(
+                        leading: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                          ),
+                          child: CircleAvatar(
+                            radius: 25,
+                            backgroundImage: player['profilePic'] != null &&
+                                    player['profilePic'] != ''
+                                ? NetworkImage(player['profilePic'])
+                                : null,
+                            child: player['profilePic'] == null ||
+                                    player['profilePic'] == ''
+                                ? const Icon(Icons.person,
+                                    size: 30, color: Colors.grey)
+                                : null,
+                          ),
+                        ),
+                        title: Text(
+                          player['username'] ?? 'Unknown',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        trailing: Text(
+                          '${player['countUploadedPhotos'] ?? 0} pts',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         );
       },
     );
+  }
+
+  String _getOrdinalSuffix(int rank) {
+    if (rank % 10 == 1 && rank % 100 != 11) {
+      return 'st';
+    } else if (rank % 10 == 2 && rank % 100 != 12) {
+      return 'nd';
+    } else if (rank % 10 == 3 && rank % 100 != 13) {
+      return 'rd';
+    } else {
+      return 'th';
+    }
   }
 }
