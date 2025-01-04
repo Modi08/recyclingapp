@@ -4,7 +4,7 @@ import 'package:ecofy/services/general/localstorage.dart';
 class Leaderboard extends StatefulWidget {
   final double height;
   final double width;
-  final DatabaseService database; // Add database service reference
+  final DatabaseService database;
 
   const Leaderboard({
     super.key,
@@ -21,16 +21,12 @@ class _LeaderboardState extends State<Leaderboard> {
   List<Map<String, dynamic>> topPlayers = [];
   bool isLoading = true;
 
-  // Fetch top players based on uploaded photos (points)
   void loadLeaderboardData() async {
     try {
       final allUsers = await widget.database.queryAll();
-      // Create a mutable copy of the list
       final mutableUsers = List<Map<String, dynamic>>.from(allUsers);
-      // Sort users by the number of uploaded photos (points) in descending order
       mutableUsers.sort((a, b) => (b['countUploadedPhotos'] ?? 0)
           .compareTo(a['countUploadedPhotos'] ?? 0));
-      // Take the top 10 users
       setState(() {
         topPlayers = mutableUsers.take(10).toList();
         isLoading = false;
@@ -52,130 +48,151 @@ class _LeaderboardState extends State<Leaderboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF37BE81),
-        title: const Text("Leaderboard", style: TextStyle(color: Colors.white)),
-        centerTitle: true,
-      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SingleChildScrollView(
-                // Add this
-                child: Column(
-                  children: [
-                    const Text(
-                      'LEADERBOARD',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.purple,
-                      ),
-                    ),
-                    SizedBox(height: widget.height * 0.02),
-                    topPlayers.length >= 3 ? _buildTopThree() : Container(),
-                    SizedBox(height: widget.height * 0.02),
-                    _buildRestOfLeaderboard(),
-                  ],
-                ),
-              ),
+          : Column(
+              children: [
+                _buildHeader(),
+                Expanded(child: _buildLeaderboardList()),
+              ],
             ),
     );
   }
 
-  // Build the top 3 players
-  Widget _buildTopThree() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        if (topPlayers.length > 1) _buildTopPlayer(topPlayers[1], 2),
-        if (topPlayers.isNotEmpty)
-          _buildTopPlayer(topPlayers[0], 1, isFirst: true),
-        if (topPlayers.length > 2) _buildTopPlayer(topPlayers[2], 3),
-      ],
+  Widget _buildHeader() {
+    return Container(
+      height: widget.height * 0.4,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFFFA726), Color(0xFFFF7043)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 40),
+          const Text(
+            'Leaderboard',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (topPlayers.length > 1)
+                _buildPodiumPlayer(topPlayers[1], 2, Colors.grey, 120),
+              if (topPlayers.isNotEmpty)
+                _buildPodiumPlayer(topPlayers[0], 1, Colors.amber, 160),
+              if (topPlayers.length > 2)
+                _buildPodiumPlayer(topPlayers[2], 3, Colors.brown, 100),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
-  // Build a top player card
-  Widget _buildTopPlayer(Map<String, dynamic> player, int rank,
-      {bool isFirst = false}) {
+  Widget _buildPodiumPlayer(
+      Map<String, dynamic> player, int rank, Color color, double columnHeight) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Container(
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.amberAccent,
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Icon(
-            Icons.person,
-            size: isFirst ? 60 : 40,
+        Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            Container(
+              height: columnHeight,
+              width: 60,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+            ),
+            Positioned(
+              top: -30,
+              child: CircleAvatar(
+                radius: 30,
+                backgroundColor: Colors.white,
+                backgroundImage:
+                    player['profilePic'] != null && player['profilePic'] != ''
+                        ? NetworkImage(player['profilePic'])
+                        : null,
+                child:
+                    player['profilePic'] == null || player['profilePic'] == ''
+                        ? const Icon(Icons.person, size: 30, color: Colors.grey)
+                        : null,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          player['username'] ?? 'Unknown',
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
-        SizedBox(height: widget.height * 0.005),
         Text(
-          player['username'] ?? 'Unknown',
-          style: TextStyle(
-            fontSize: isFirst ? 18 : 14,
-            fontWeight: FontWeight.bold,
-          ),
+          '${player['countUploadedPhotos'] ?? 0} pts',
+          style: const TextStyle(fontSize: 14, color: Colors.white70),
         ),
         Text(
-          (player['countUploadedPhotos'] ?? 0).toString(), // Display points
-          style: TextStyle(
-            fontSize: isFirst ? 24 : 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.purple,
-          ),
-        ),
-        SizedBox(height: widget.height * 0.005),
-        CircleAvatar(
-          radius: widget.width * 0.02,
-          backgroundColor: Colors.yellow,
-          child: Text(rank.toString(),
-              style: const TextStyle(color: Colors.black)),
+          rank == 1
+              ? '1st'
+              : rank == 2
+                  ? '2nd'
+                  : '3rd',
+          style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.8)),
         ),
       ],
     );
   }
 
-  // Build the rest of the leaderboard
-  Widget _buildRestOfLeaderboard() {
-    if (topPlayers.length <= 3) {
-      return const SizedBox(); // Return an empty widget if there are no additional players
-    }
-
-    return Column(
-      children: topPlayers.sublist(3).asMap().entries.map((entry) {
-        int index = entry.key;
-        Map<String, dynamic> player = entry.value;
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 4),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.amberAccent,
-              child: Text((index + 4).toString(),
-                  style: const TextStyle(color: Colors.black)),
+  Widget _buildLeaderboardList() {
+    return ListView.builder(
+      itemCount: topPlayers.length - 3,
+      itemBuilder: (context, index) {
+        final player = topPlayers[index + 3];
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-            title: Text(player['username'] ?? 'Unknown'),
-            trailing: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.redAccent,
-                borderRadius: BorderRadius.circular(12),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundImage:
+                    player['profilePic'] != null && player['profilePic'] != ''
+                        ? NetworkImage(player['profilePic'])
+                        : null,
+                child:
+                    player['profilePic'] == null || player['profilePic'] == ''
+                        ? const Icon(Icons.person, color: Colors.white)
+                        : null,
               ),
-              child: Text(
-                (player['countUploadedPhotos'] ?? 0)
-                    .toString(), // Display points
+              title: Text(
+                player['username'] ?? 'Unknown',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              trailing: Text(
+                '${player['countUploadedPhotos'] ?? 0} pts',
                 style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepOrange,
+                ),
               ),
             ),
           ),
         );
-      }).toList(),
+      },
     );
   }
 }
