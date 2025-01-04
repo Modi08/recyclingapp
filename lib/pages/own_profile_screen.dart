@@ -281,29 +281,29 @@ class _OwnProfileScreenState extends State<OwnProfileScreen> {
   }
 
   Widget _buildGridView() {
-    final int countPhotos = widget.userData['countUploadedPhotos']!;
-    //print('countPhotos $countPhotos');
+    final int countPhotos = widget.userData['countUploadedPhotos'] ?? 0;
 
     return AspectRatio(
-      aspectRatio: 1,
+      aspectRatio: 1, // Ensures grid cells are square
       child: GridView.builder(
         padding: const EdgeInsets.all(2.0),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 2,
-          mainAxisSpacing: 2,
-          childAspectRatio: 1.0,
+          crossAxisCount: 3, // 3 items per row
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
+          childAspectRatio: 1.0, // Ensures square cells
         ),
         itemCount: countPhotos,
         itemBuilder: (context, index) {
-          //print('index $index');
-          //print('$S3Url${widget.userId}/${index + 1}.png');
-
-          //Find a way to check if the image is real!!!
-          return Container(
-            color: const Color(0xFF37BE81),
-            alignment: Alignment.center,
-            child: Image.network('$S3Url${widget.userId}/${index + 1}.png'),
+          return ClipRRect(
+            borderRadius:
+                BorderRadius.circular(0), // Optional: Add rounded corners
+            child: SizedBox.expand(
+              child: Image.network(
+                '$S3Url${widget.userId}/${index + 1}.png',
+                fit: BoxFit.cover, // Ensures the image fully covers the box
+              ),
+            ),
           );
         },
       ),
