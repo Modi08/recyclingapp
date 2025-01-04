@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'dart:convert';
 
 import 'package:ecofy/components/avatarCircle.dart';
@@ -14,13 +12,15 @@ class AllUsersScreen extends StatefulWidget {
   final WebSocketChannel socket;
   final String userId;
   final DatabaseService database;
-  const AllUsersScreen(
-      {super.key,
-      required this.width,
-      required this.height,
-      required this.socket,
-      required this.userId,
-      required this.database});
+
+  const AllUsersScreen({
+    super.key,
+    required this.width,
+    required this.height,
+    required this.socket,
+    required this.userId,
+    required this.database,
+  });
 
   @override
   State<AllUsersScreen> createState() => _AllUsersScreenState();
@@ -85,7 +85,7 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
               children: [
                 // Search Bar
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: TextField(
                     onChanged: _filterUsers,
                     decoration: const InputDecoration(
@@ -101,17 +101,45 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
 
                 // User List
                 Expanded(
-                  child: ListView.builder(
+                  child: ListView.separated(
                     itemCount: filteredUsers.length,
+                    separatorBuilder: (context, index) => const Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                      height: 0,
+                    ),
                     itemBuilder: (context, index) {
                       final user = filteredUsers[index];
                       return ListTile(
-                        leading: ClipOval(
-                          child: AvatarCircle(
-                              width: widget.width * 0.05,
-                              profilePic: user["profilePic"]),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 10.0,
+                          vertical: 10.0,
                         ),
-                        title: Text(user["username"]),
+
+                        // Here is your green border around the circular avatar
+                        leading: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Color(0xFF37BE81),
+                              width: 3.0,
+                            ),
+                          ),
+                          child: ClipOval(
+                            child: AvatarCircle(
+                              width: widget.width * 0.12,
+                              profilePic: user["profilePic"],
+                            ),
+                          ),
+                        ),
+
+                        title: Text(
+                          user["username"],
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                         onTap: () {
                           debugPrint("Tapped on ${user['username']}");
                         },
