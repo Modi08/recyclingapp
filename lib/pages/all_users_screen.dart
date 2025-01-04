@@ -39,7 +39,7 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
         isLoading = false;
       });
     }).catchError((error) {
-      print("Error loading user data: $error");
+      debugPrint("Error loading user data: $error");
       setState(() {
         isLoading = false;
       });
@@ -58,7 +58,7 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
             .toList();
       }
     });
-    print("Filtered users: $filteredUsers");
+    debugPrint("Filtered users: $filteredUsers");
   }
 
   @override

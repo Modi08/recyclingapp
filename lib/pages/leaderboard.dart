@@ -32,7 +32,7 @@ class _LeaderboardState extends State<Leaderboard> {
         isLoading = false;
       });
     } catch (error) {
-      print("Error loading leaderboard data: $error");
+      debugPrint("Error loading leaderboard data: $error");
       setState(() {
         isLoading = false;
       });

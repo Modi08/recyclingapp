@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'dart:developer' as developer;
 
 class User {
   final String id;
@@ -164,7 +165,8 @@ class DatabaseService {
   Future<int> updateValue(String key, dynamic value, String userId) async {
     final data = await queryById(userId);
     if (data == null) {
-      print("Error: User with ID $userId not found in the database.");
+      developer.log("Error: User with ID $userId not found in the database.",
+          name: 'DatabaseService');
       throw Exception("User not found");
     }
 
