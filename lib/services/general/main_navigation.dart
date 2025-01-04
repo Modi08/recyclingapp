@@ -1,4 +1,4 @@
-import 'package:ecofy/components/circularLoader.dart';
+import 'package:ecofy/components/circular_loader.dart';
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:ecofy/services/general/socket.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-import 'package:ecofy/components/avatarCircle.dart';
+import 'package:ecofy/components/avatar_circle.dart';
 import 'package:ecofy/services/general/image_upload.dart';
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:flutter/material.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:ecofy/components/avatarCircle.dart';
-import 'package:ecofy/components/circularLoader.dart';
+import 'package:ecofy/components/avatar_circle.dart';
+import 'package:ecofy/components/circular_loader.dart';
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
