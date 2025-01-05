@@ -2,6 +2,7 @@ import 'package:ecofy/components/circular_loader.dart';
 import 'package:ecofy/services/general/localstorage.dart';
 import 'package:ecofy/services/general/socket.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../pages/own_profile_screen.dart';
@@ -102,6 +103,10 @@ class _MainNavigationState extends State<MainNavigation> {
         socket = connectToWebsocket(socketUrl);
       });
       listendMsg(socket!, widget.database, widget.userId);
+    });
+    FlutterBackgroundService().startService().then((data) {
+      debugPrint("Serviec started $data");
+      FlutterBackgroundService().invoke("setAsForeground");
     });
   }
 
