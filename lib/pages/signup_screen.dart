@@ -93,6 +93,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
     } catch (error) {
       if (mounted) {
+
        debugPrint("Signup error: $error"); // Debug error
 
         showSnackbar(context, "An error occurred. Please try again.", true);
