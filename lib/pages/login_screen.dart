@@ -43,9 +43,17 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         var responseData = jsonDecode(response.body);
 
+<<<<<<< HEAD
         // Log the parsed response for further debugging
        debugPrint("Parsed Response: $responseData");
 
+=======
+
+        // Log the parsed response for further debugging
+       debugPrint("Parsed Response: $responseData");
+
+        // Display a message based on the response
+>>>>>>> 6216169 (set platform channels for notifcation but getting errors on then. NO IOS intergration yet)
         showSnackbar(context, responseData['msg'], response.statusCode == 400);
 
         if (response.statusCode == 200) {
@@ -66,8 +74,16 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (error) {
       if (mounted) {
+<<<<<<< HEAD
         // Log the error for debugging
        debugPrint("Error occurred during login: $error");
+=======
+
+        // Log the error for debugging
+       debugPrint("Error occurred during login: $error");
+
+        // Display a general error message to the user
+>>>>>>> 6216169 (set platform channels for notifcation but getting errors on then. NO IOS intergration yet)
         showSnackbar(context, "An error occurred. Please try again.", true);
       }
     }
