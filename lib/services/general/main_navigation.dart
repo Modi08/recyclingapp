@@ -106,7 +106,7 @@ class _MainNavigationState extends State<MainNavigation> {
     });
     FlutterBackgroundService().startService().then((data) {
       debugPrint("Serviec started $data");
-      FlutterBackgroundService().invoke("setAsForeground");
+      FlutterBackgroundService().invoke("setAsBackground");
     });
   }
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:ecofy/services/general/platfrom_channels.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 
@@ -49,6 +50,14 @@ void onStart(ServiceInstance service) async {
       ///debugPrint("Timer Ran and service is android instance");
       if (await service.isForegroundService()) {
         service.setForegroundNotificationInfo(title: "Ecofy", content: "upload pic at ${DateTime.now()}");
+      } else {
+        Map<String, dynamic> args = {
+          "title": "test",
+          "body": "notfication Test Is Successful"
+        };
+        debugPrint("sending request to channel");
+        var responce = await notificationChannel.invokeMethod("sendNotification");
+        debugPrint(responce);
       }
     }
   });

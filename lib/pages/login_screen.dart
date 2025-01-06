@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
         var responseData = jsonDecode(response.body);
 
         // Log the parsed response for further debugging
-        print("Parsed Response: $responseData");
+       debugPrint("Parsed Response: $responseData");
 
         // Display a message based on the response
         showSnackbar(context, responseData['msg'], response.statusCode == 400);
@@ -75,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (error) {
       if (mounted) {
         // Log the error for debugging
-        print("Error occurred during login: $error");
+       debugPrint("Error occurred during login: $error");
 
         // Display a general error message to the user
         showSnackbar(context, "An error occurred. Please try again.", true);
