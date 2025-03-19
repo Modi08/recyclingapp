@@ -42,21 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (mounted) {
         var responseData = jsonDecode(response.body);
-<<<<<<< HEAD
 
-<<<<<<< HEAD
         // Log the parsed response for further debugging
        debugPrint("Parsed Response: $responseData");
-
-=======
-
-=======
->>>>>>> a40d1e2 (new login and sign up page UI)
-        // Log the parsed response for further debugging
-       debugPrint("Parsed Response: $responseData");
-
-        // Display a message based on the response
->>>>>>> 6216169 (set platform channels for notifcation but getting errors on then. NO IOS intergration yet)
         showSnackbar(context, responseData['msg'], response.statusCode == 400);
 
         if (response.statusCode == 200) {
